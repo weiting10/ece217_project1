@@ -150,18 +150,19 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
         
         for(int i=0; i<3 ;i++){
           if(((x-1+i)<0)||((x-1+i)>(w-1))){
-	    continue;
+	        continue;
           }
-	  for(int j=0; j<3 ;j++){
-	    if(((y-1+j)<0)||((y-1+j)>(h-1))){
-	      continue;
-	    }
-	    index = twod_to_oned(x,y,w);
-	    expanded_obstacle[index]=0;
-	  }
-	}	
+		  for(int j=0; j<3 ;j++){
+		    if(((y-1+j)<0)||((y-1+j)>(h-1))){
+		      continue;
+	    	}
+		    index = twod_to_oned(x,y,w);
+		    expanded_obstacle[index]=0;
+	  	  }
+		}	
       }
     }
+	return expanded_obstacle;
   }
 
   // map (x,y) to 1D array index
