@@ -63,7 +63,10 @@ target_compile_features(test_subscriber PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(test_subscriber rclcpp geometry_msgs)
 target_link_libraries(test_subscriber ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
-add_executable(test_server src/test_server.cpp)
+add_executable(test_server src/test_server.cpp 
+						   src/project1/search_node.cpp 
+						   src/test_search_node.cpp
+)
 target_include_directories(test_server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
