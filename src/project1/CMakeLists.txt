@@ -69,7 +69,7 @@ target_include_directories(test_server PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 target_compile_features(test_server PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(test_server rclcpp geometry_msgs nav_msgs visualization_msgs)
-target_link_libraries(test_server ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target})
+target_link_libraries(test_server ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} project1_library)
 
 add_executable(test_client src/test_client.cpp)
 target_include_directories(test_client PUBLIC

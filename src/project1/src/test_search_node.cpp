@@ -5,11 +5,10 @@
 #include <deque>
 #include <algorithm>
 
-int twod_to_oned(int x, int y, int w);
-int oned_to_twod(int index, int w);
-
 namespace project1{
 
+int twod_to_oned(int x, int y, int w);
+int oned_to_twod(int index, int w);
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "process_map receives map_data"<< std::endl;
 	 
