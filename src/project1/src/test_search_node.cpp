@@ -146,9 +146,9 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(int p=0; p < w*h ; p++){
       int node = array[p];
       if(node == 0){
-        auto result = oned_to_twod(node,w);
-	    int x = result.first;
-	    int y = result.second;
+        auto result = oned_to_twod(p,w);
+	    x = result.first;
+	    y = result.second;
         
         for(int i=0; i<3 ;i++){
           if(((x-1+i)<0)||((x-1+i)>(w-1))){
