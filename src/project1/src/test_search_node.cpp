@@ -8,7 +8,7 @@
 namespace project1{
 
 int twod_to_oned(int x, int y, int w);
-int oned_to_twod(int index, int w);
+std::pair<int,int> oned_to_twod(int index, int w);
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "process_map receives map_data"<< std::endl;
 	 
@@ -137,8 +137,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // c space expansion: assuming 0 is the obstacles
-  int c_space_expansion(int array[], int w, int h){
-    int expanded_obstacle[w*h]={255};
+  std::vector<int> c_space_expansion(int array[], int w, int h){
+    std::vector<int> expanded_obstacle(w * h, 255);
     int x;
     int y;
     int index;
@@ -146,7 +146,9 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(int p=0; p < w*h ; p++){
       int node = array[p];
       if(node == 0){
-        x, y = oned_to_twod(node,w);
+        auto result = oned_to_twod(node,w);
+	    int x = result.first;
+	    int y = result.second;
         
         for(int i=0; i<3 ;i++){
           if(((x-1+i)<0)||((x-1+i)>(w-1))){
@@ -172,14 +174,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // map 1D array index to (x,y)
-  int oned_to_twod(int index, int w){
+  std::pair<int,int> oned_to_twod(int index, int w){
     int x;
     int y;
 
     y = index/w;
     x = index%w;
 
-    return x,y;
+    return {x,y};
   }
 
 }
