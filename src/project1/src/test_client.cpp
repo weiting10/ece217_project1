@@ -13,7 +13,7 @@ void request_to_visualization_msgs_marker_array( const std::shared_ptr<rclcpp::N
 
   // start_marker
   visualization_msgs::msg::Marker start_marker;
-  start_marker.header.frame_id = "mapid";
+  start_marker.header.frame_id = "map";
   start_marker.header.stamp = node->get_clock()->now();
   start_marker.id = 0;
   start_marker.ns = "request";
@@ -150,7 +150,7 @@ int main( int argc, char* argv[]){
   request->goal.y = vm["goal-y"].as<double>();
   request->goal.theta = vm["goal-theta"].as<double>();
   
-  request->map.header.frame_id = "mapid";
+  request->map.header.frame_id = "map";
   request->map.header.stamp = node->get_clock()->now();
 
   if( vm.count("map") ){
