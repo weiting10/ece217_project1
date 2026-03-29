@@ -146,10 +146,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
         }
       }
 
-	
-	bool in_closed_list = (closed_set.count(key) > 0);
-	bool in_open_list   = (open_set.count(key)   > 0);
-
       if((in_closed_list == 0)&&(in_open_list == 0)){
         open_list.push_back(child);
       }
