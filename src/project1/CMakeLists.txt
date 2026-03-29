@@ -64,8 +64,8 @@ ament_target_dependencies(test_subscriber rclcpp geometry_msgs)
 target_link_libraries(test_subscriber ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 add_executable(test_server src/test_server.cpp 
-						   src/project1/search_node.cpp 
-						   src/test_search_node.cpp
+			   src/project1/search_node.cpp 
+			   src/test_search_node.cpp
 )
 target_include_directories(test_server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -82,13 +82,6 @@ target_compile_features(test_client PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(test_client rclcpp geometry_msgs nav_msgs visualization_msgs)
 target_link_libraries(test_client ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target})
 
-add_executable(test_search_node src/test_search_node.cpp)
-target_include_directories(test_search_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
-target_compile_features(test_search_node PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(test_search_node rclcpp geometry_msgs nav_msgs)
-target_link_libraries(test_search_node ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} project1_library)
 
 install(TARGETS 
 	test_node
@@ -96,7 +89,6 @@ install(TARGETS
 	test_subscriber
 	test_server
 	test_client
-	test_search_node
         DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS project1_library

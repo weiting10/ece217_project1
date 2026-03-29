@@ -8,10 +8,12 @@
 namespace project1{
 
 int twod_to_oned(int x, int y, int w);
-std::pair<int,int> oned_to_twod(int index, int w);
+int oned_to_twod(int index, int w);
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "process_map receives map_data"<< std::endl;
-	 
+
+ 
+
   for(int i = 0; i< map_data.size(); i++){
     std::cout << map_data[i] << " ";
   }  
@@ -19,9 +21,12 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << std::endl;
   std::cout << "process_map receives width: " << width << std::endl;
   std::cout << "process_map receives height: " << height << std::endl;
-	
-	
+		
   std::cout << "start of test_search_node"<< std::endl << std::endl;
+
+  // c space expansion
+  expanded_map_data = c_space_expansion(map_data, width, height);
+
 
   // create pointers for start node and goal node
   std::shared_ptr< project1::SearchNode > start_node = std::make_shared< project1::SearchNode >( -20, 0);
@@ -77,22 +82,22 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::cout << "top memory location:" << top << std::endl;
 
     // create descendents
-    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+1, 0.0 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-1, 0.0 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+1, top->y, 0.0 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-1, top->y +1, 0.0 , 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+0.2, M_PI/2 , 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-0.2, 3*M_PI/2 , 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+0.2, top->y, 0.0 , 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) );
-    b->h = sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) );
-    c->h = sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) );
-    d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) );
+    a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) + abs(goal_node->theta - a->theta);
+    b->h = sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) + abs(goal_node->theta - b->theta);
+    c->h = sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) + abs(goal_node->theta - c->theta);
+    d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) + abs(goal_node->theta - d->theta);
   
     // compute the distance from descendents to the start (g)
-    a->g = sqrt( std::pow( a->x - a->bp->x, 2.0) + std::pow( a->y - a->bp->y, 2.0)) + a->bp->g;
-    b->g = sqrt( std::pow( b->x - b->bp->x, 2.0) + std::pow( b->y - b->bp->y, 2.0)) + b->bp->g;
-    c->g = sqrt( std::pow( c->x - c->bp->x, 2.0) + std::pow( c->y - c->bp->y, 2.0)) + c->bp->g;
-    d->g = sqrt( std::pow( d->x - d->bp->x, 2.0) + std::pow( d->y - d->bp->y, 2.0)) + d->bp->g;
+    a->g = sqrt( std::pow( a->x - a->bp->x, 2.0) + std::pow( a->y - a->bp->y, 2.0)) + abs(a->theta - a->bp->theta) + a->bp->g;
+    b->g = sqrt( std::pow( b->x - b->bp->x, 2.0) + std::pow( b->y - b->bp->y, 2.0)) + abs(b->theta - b->bp->theta) + b->bp->g;
+    c->g = sqrt( std::pow( c->x - c->bp->x, 2.0) + std::pow( c->y - c->bp->y, 2.0)) + abs(c->theta - c->bp->theta) + c->bp->g;
+    d->g = sqrt( std::pow( d->x - d->bp->x, 2.0) + std::pow( d->y - d->bp->y, 2.0)) + abs(d->theta - d->bp->theta) + d->bp->g;
 
     // compute f by adding h and g for each descendent
     a->f = a->g + a->h;
@@ -102,10 +107,26 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   
     // create a vector to contain a,b,c,d
     std::vector<std::shared_ptr<project1::SearchNode>> children = {a,b,c,d};
-    std::shared_ptr<project1::SearchNode> closed_node;
 
     // check the four descendents
     for(auto& child:children){
+       
+      //convert (x,y) from meter unit to 1 per unit
+      int col = child->x / 0.2;
+      int row = child->y / 0.2;      
+
+      // check if each descendent is obstacle
+      map_index = twod_to_oned(col, row);
+      if(expanded_map_data[map_index] == -128){
+        closed_list.push_back(child);
+	continue;
+      }
+
+      // check if each descendent is out of the boundary
+      if((child->x <-25.6)||(child->x > 25.4)||(child->y <-25.6)||(child->y > 25.4){
+  	closed_list.push_back(child);
+	continue;
+      }
 
       // check if each descendent is in the closed_list	    
       bool in_closed_list=0;
@@ -118,9 +139,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       if(in_closed_list == 0){
         open_list.push_back(child);
       }
-
-      // check if each descendent is obstacle
-      //
 
     }
 
@@ -137,34 +155,31 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // c space expansion: assuming 0 is the obstacles
-  std::vector<int> c_space_expansion(int array[], int w, int h){
-    std::vector<int> expanded_obstacle(w * h, 255);
+  int c_space_expansion(std::vector<int> map_data, int w, int h){
+    std::vector<int> expanded_obstacle(w*h, 127);
     int x;
     int y;
     int index;
 
     for(int p=0; p < w*h ; p++){
-      int node = array[p];
+      int node = map_data[p];
       if(node == 0){
-        auto result = oned_to_twod(p,w);
-	    x = result.first;
-	    y = result.second;
+        x, y = oned_to_twod(node,w);
         
         for(int i=0; i<3 ;i++){
           if(((x-1+i)<0)||((x-1+i)>(w-1))){
-	        continue;
+	    continue;
           }
-		  for(int j=0; j<3 ;j++){
-		    if(((y-1+j)<0)||((y-1+j)>(h-1))){
-		      continue;
-	    	}
-		    index = twod_to_oned(x,y,w);
-		    expanded_obstacle[index]=0;
-	  	  }
-		}	
+	  for(int j=0; j<3 ;j++){
+	    if(((y-1+j)<0)||((y-1+j)>(h-1))){
+	      continue;
+	    }
+	    index = twod_to_oned(x,y,w);
+	    expanded_obstacle[index]=-128;
+	  }
+	}	
       }
     }
-	return expanded_obstacle;
   }
 
   // map (x,y) to 1D array index
@@ -174,28 +189,15 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // map 1D array index to (x,y)
-  std::pair<int,int> oned_to_twod(int index, int w){
+  int oned_to_twod(int index, int w){
     int x;
     int y;
 
     y = index/w;
     x = index%w;
 
-    return {x,y};
+    return x,y;
   }
 
 }
 
-  /*
-  std::cout << "top:" << *top << std::endl;
-
-  std::cout << "top memory location:" << top << std::endl;
-
-  open_list.pop_front();
-  closed_list.push_back(top);
-
-  std::cout << "open_list" << open_list << std::endl;
-  std::cout << "closed_list" << closed_list << std::endl;
-
-  std::cout << "end of test_search_node" << std::endl;
-  */

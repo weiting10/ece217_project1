@@ -10,7 +10,7 @@ namespace project1 {
   int process_map(const std::vector<int>& map_data, int width, int height);
   class SearchNode {
   public:
-    SearchNode( const int& xArg =0, const int& yArg = 0, const double& fArg = 0.0, const double& gArg = 0.0, const double& hArg = 0.0, const std::shared_ptr< SearchNode >& bpArg = nullptr);
+    SearchNode( const int& xArg =0, const int& yArg = 0, const double& thetaArg = 0.0, const double& fArg = 0.0, const double& gArg = 0.0, const double& hArg = 0.0, const std::shared_ptr< SearchNode >& bpArg = nullptr);
     SearchNode( const SearchNode& other ) = default;
     
     int x;
@@ -26,7 +26,7 @@ namespace project1 {
   };
 
   inline std::ostream& operator<<(std::ostream& out, const SearchNode& other ){
-    out << "x:" << other.x << " y:" << other.y << " f:" << other.f << " g:" << other.g << " h:"  << other.h << " bp:" << other.bp;
+    out << "x:" << other.x << " y:" << other.y << "theta: " << other.theta <<  " f:" << other.f << " g:" << other.g << " h:"  << other.h << " bp:" << other.bp;
     return out;
   }
 
