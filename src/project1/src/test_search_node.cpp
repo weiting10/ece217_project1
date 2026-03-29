@@ -79,8 +79,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     closed_list.push_back(top);
     
     // print top location and its memeory location
-    std::cout << "top:" << *top << std::endl;
-    std::cout << "top memory location:" << top << std::endl;
+    // std::cout << "top:" << *top << std::endl;
+    // std::cout << "top memory location:" << top << std::endl;
 
     // create descendents
     std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+0.2, M_PI/2 , 0.0, 0.0, 0.0, top);
@@ -145,6 +145,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
           break;
         }
       }
+
+	
+	bool in_closed_list = (closed_set.count(key) > 0);
+	bool in_open_list   = (open_set.count(key)   > 0);
 
       if((in_closed_list == 0)&&(in_open_list == 0)){
         open_list.push_back(child);
