@@ -89,10 +89,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) + abs(goal_node->theta - a->theta);
-    b->h = sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) + abs(goal_node->theta - b->theta);
-    c->h = sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) + abs(goal_node->theta - c->theta);
-    d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) + abs(goal_node->theta - d->theta);
+    a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) ;
+    b->h = sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) ;
+    c->h = sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) ;
+    d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) ;
   
     // compute the distance from descendents to the start (g)
     a->g = sqrt( std::pow( a->x - a->bp->x, 2.0) + std::pow( a->y - a->bp->y, 2.0)) + abs(a->theta - a->bp->theta) + a->bp->g;
@@ -116,16 +116,16 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       int col = static_cast<int>((child->x+25.6) / 0.2);
       int row = static_cast<int>((child->y+25.6) / 0.2);      
 
+      // check if each descendent is out of the boundary
+      if((col <0)||(col >= width)||(row <0)||(row >= height)){
+        closed_list.push_back(child);
+        continue;
+      }
+
       // check if each descendent is obstacle
       int map_index = twod_to_oned(col, row, width);
       if(expanded_map_data[map_index] == -128){
         closed_list.push_back(child);
-	continue;
-      }
-
-      // check if each descendent is out of the boundary
-      if((col <0)||(col >= width)||(row <0)||(row >= height)){
-  	closed_list.push_back(child);
 	continue;
       }
 
@@ -145,10 +145,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
   // sort the open list
     std::sort( open_list.begin(), open_list.end(), []( const std::shared_ptr< project1::SearchNode >& firstArg, const std::shared_ptr< project1::SearchNode >& secondArg ) { return ( firstArg->f < secondArg->f ); } );
-  
-    std::cout << "open_list" << open_list << std::endl;
-    std::cout << "closed_list" << closed_list << std::endl;
-
     }
     
     std::cout << "No path is found" << std::endl;
@@ -164,7 +160,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     for(int p=0; p < w*h ; p++){
       int node = map_data[p];
-      if(node == 0){
+      if(node == -128){
         auto [x,y] = oned_to_twod(p,w);
         
         for(int i=0; i<3 ;i++){
@@ -175,7 +171,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	    if(((y-1+j)<0)||((y-1+j)>(h-1))){
 	      continue;
 	    }
-	    index = twod_to_oned(x,y,w);
+	    index = twod_to_oned(x-1+i,y-1+j,w);
 	    expanded_obstacle[index]=-128;
 	  }
 	}	
