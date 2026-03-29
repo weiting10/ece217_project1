@@ -137,7 +137,16 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	  break;
         }
       }
-      if(in_closed_list == 0){
+
+      bool in_open_list=0;
+      for(auto& open_node:open_list){
+        if((child->x == open_node->x) && (child->y == open_node->y) && (child->theta == open_node->theta)){
+          in_open_list=1;
+          break;
+        }
+      }
+
+      if((in_closed_list == 0)&&(in_open_list == 0)){
         open_list.push_back(child);
       }
 
