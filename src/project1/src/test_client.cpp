@@ -131,8 +131,11 @@ int main( int argc, char* argv[]){
 
   std::shared_ptr< rclcpp::Node > node = rclcpp::Node::make_shared("project1_client");
 
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid_<std::allocator<void> >, std::allocator<void> > > occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", 1 );
+  //std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid_<std::allocator<void> >, std::allocator<void> > > occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", 1 );
 
+  auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();
+  auto occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", qos);
+	
   std::shared_ptr<rclcpp::Publisher<visualization_msgs::msg::MarkerArray_<std::allocator<void> >, std::allocator<void> > > marker_array_publisher = node->create_publisher<visualization_msgs::msg::MarkerArray>("visualization_marker_array", 1 );
 
   rclcpp::Client<project1::srv::PlanningQuery>::SharedPtr client = node->create_client<project1::srv::PlanningQuery>("planning_query");
