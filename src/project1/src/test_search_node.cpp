@@ -157,7 +157,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // c space expansion: assuming 0 is the obstacles
-  int c_space_expansion(std::vector<int> map_data, int w, int h){
+  std::vector<int> c_space_expansion(std::vector<int> map_data, int w, int h){
     std::vector<int> expanded_obstacle(w*h, 127);
     int x;
     int y;
@@ -182,6 +182,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	}	
       }
     }
+
+    return expanded_obstacle;
   }
 
   // map (x,y) to 1D array index
