@@ -7,9 +7,9 @@
 
 namespace project1{
 
-int twod_to_oned(int x, int y, int w);
+int twod_to_oned(double x, double y, int w);
 int oned_to_twod(int index, int w);
-int c_space_expansion(std::vector<int>, int w, int h);
+std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "process_map receives map_data"<< std::endl;
@@ -114,8 +114,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(auto& child:children){
        
       //convert (x,y) from meter unit to 1 per unit
-      int col = child->x / 0.2;
-      int row = child->y / 0.2;      
+      int col = static_cast<int>(child->x / 0.2);
+      int row = static_cast<int>(child->y / 0.2);      
 
       // check if each descendent is obstacle
       int map_index = twod_to_oned(col, row, width);
