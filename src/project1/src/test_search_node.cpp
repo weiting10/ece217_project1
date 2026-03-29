@@ -22,7 +22,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << std::endl;
   std::cout << "process_map receives width: " << width << std::endl;
   std::cout << "process_map receives height: " << height << std::endl;
-		
+
   std::cout << "start of test_search_node"<< std::endl << std::endl;
 
   // c space expansion
@@ -132,7 +132,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       // check if each descendent is in the closed_list	    
       bool in_closed_list=0;
       for(auto& closed_node:closed_list){
-        if((child->x == closed_node->x) && (child->y == closed_node->y) && (child->theta == closed_node->theta)){
+        if(fabs(child->x - closed_node->x)<1e-5 && fabs(child->y - closed_node->y)<1e-5 && fabs(child->theta - closed_node->theta)<1e-5){
 	  in_closed_list=1;
 	  break;
         }
@@ -140,7 +140,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
       bool in_open_list=0;
       for(auto& open_node:open_list){
-        if((child->x == open_node->x) && (child->y == open_node->y) && (child->theta == open_node->theta)){
+        if(fabs(child->x - open_node->x)<1e-5 && fabs(child->y - open_node->y)<1e-5 && fabs(child->theta - open_node->theta)<1e-5){
           in_open_list=1;
           break;
         }
