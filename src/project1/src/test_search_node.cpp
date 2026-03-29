@@ -84,10 +84,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::cout << "top memory location:" << top << std::endl;
 
     // create descendents
-    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+0.2, M_PI/2 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-0.2, 3*M_PI/2 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+0.2, top->y, 0.0 , 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+0.2, M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-0.2, 3*M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+0.2, top->y, 0.0 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
     a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) + abs(goal_node->theta - a->theta);
@@ -187,7 +187,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // map (x,y) to 1D array index
-  int twod_to_oned(int x, int y, int w){
+  int twod_to_oned(double x, double y, int w){
     int index = y*w + x ;
     return index;
   }
