@@ -95,10 +95,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) ;
   
     // compute the distance from descendents to the start (g)
-    a->g = sqrt( std::pow( a->x - a->bp->x, 2.0) + std::pow( a->y - a->bp->y, 2.0)) + abs(a->theta - a->bp->theta) + a->bp->g;
-    b->g = sqrt( std::pow( b->x - b->bp->x, 2.0) + std::pow( b->y - b->bp->y, 2.0)) + abs(b->theta - b->bp->theta) + b->bp->g;
-    c->g = sqrt( std::pow( c->x - c->bp->x, 2.0) + std::pow( c->y - c->bp->y, 2.0)) + abs(c->theta - c->bp->theta) + c->bp->g;
-    d->g = sqrt( std::pow( d->x - d->bp->x, 2.0) + std::pow( d->y - d->bp->y, 2.0)) + abs(d->theta - d->bp->theta) + d->bp->g;
+    a->g = 0.2 + abs(a->theta - a->bp->theta) + a->bp->g;
+    b->g = 0.2 + abs(b->theta - b->bp->theta) + b->bp->g;
+    c->g = 0.2 + abs(c->theta - c->bp->theta) + c->bp->g;
+    d->g = 0.2 + abs(d->theta - d->bp->theta) + d->bp->g;
 
     // compute f by adding h and g for each descendent
     a->f = a->g + a->h;
@@ -118,21 +118,21 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
       // check if each descendent is out of the boundary
       if((col <0)||(col >= width)||(row <0)||(row >= height)){
-        closed_list.push_back(child);
+        //closed_list.push_back(child);
         continue;
       }
 
       // check if each descendent is obstacle
       int map_index = twod_to_oned(col, row, width);
       if(expanded_map_data[map_index] == -128){
-        closed_list.push_back(child);
+        //closed_list.push_back(child);
 	continue;
       }
 
       // check if each descendent is in the closed_list	    
       bool in_closed_list=0;
       for(auto& closed_node:closed_list){
-        if(child->x == closed_node->x && child->y == closed_node->y){
+        if((child->x == closed_node->x) && (child->y == closed_node->y) && (child->theta == closed_node->theta)){
 	  in_closed_list=1;
 	  break;
         }
