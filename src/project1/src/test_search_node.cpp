@@ -9,6 +9,8 @@ namespace project1{
 
 int twod_to_oned(int x, int y, int w);
 int oned_to_twod(int index, int w);
+int c_space_expansion(std::vector<int>, int w, int h);
+
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "process_map receives map_data"<< std::endl;
 
@@ -25,7 +27,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "start of test_search_node"<< std::endl << std::endl;
 
   // c space expansion
-  expanded_map_data = c_space_expansion(map_data, width, height);
+  std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
 
 
   // create pointers for start node and goal node
@@ -116,14 +118,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       int row = child->y / 0.2;      
 
       // check if each descendent is obstacle
-      map_index = twod_to_oned(col, row);
+      int map_index = twod_to_oned(col, row, width);
       if(expanded_map_data[map_index] == -128){
         closed_list.push_back(child);
 	continue;
       }
 
       // check if each descendent is out of the boundary
-      if((child->x <-25.6)||(child->x > 25.4)||(child->y <-25.6)||(child->y > 25.4){
+      if((child->x <-25.6)||(child->x > 25.4)||(child->y <-25.6)||(child->y > 25.4)){
   	closed_list.push_back(child);
 	continue;
       }

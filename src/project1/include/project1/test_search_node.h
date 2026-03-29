@@ -16,6 +16,7 @@ namespace project1 {
     int x;
     int y;
 
+    double theta;
     double f;
     double g;
     double h;
