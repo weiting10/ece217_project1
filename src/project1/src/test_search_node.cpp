@@ -4,6 +4,8 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#incldue <geometry_msgs/msg/pose2_d.hpp>
+#include <unistd.h>
 
 namespace project1{
 
@@ -70,6 +72,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	std::cout << "top:" << *top << std::endl;
         top=top->bp;
       }
+
+      rclcpp::init(argc,argv);
+	  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
+	  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::Pose2D>> pose2d_publisher = node->create_publisher<geometry_msgs::msg::Pose2D>("pose2d",1);
+
+	  sleep(1);
+	  geometry_msgs::msg::Pose
+	  
       return 0;
       
     }
@@ -158,6 +168,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     
     std::cout << "No path is found" << std::endl;
     return 0;
+	
   }
 
   // c space expansion: assuming 0 is the obstacles
