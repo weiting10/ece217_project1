@@ -8,17 +8,16 @@
 namespace project1{
 
 int twod_to_oned(double x, double y, int w);
-int oned_to_twod(int index, int w);
+std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 
 int process_map(const std::vector<int>& map_data, int width, int height) {
-  std::cout << "process_map receives map_data"<< std::endl;
+  std::cout << "Start processing map"<< std::endl;
 
- 
-
+  /*
   for(int i = 0; i< map_data.size(); i++){
     std::cout << map_data[i] << " ";
-  }  
+  } */ 
 
   std::cout << std::endl;
   std::cout << "process_map receives width: " << width << std::endl;
@@ -114,8 +113,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(auto& child:children){
        
       //convert (x,y) from meter unit to 1 per unit
-      int col = static_cast<int>(child->x / 0.2);
-      int row = static_cast<int>(child->y / 0.2);      
+      int col = static_cast<int>((child->x+25.6) / 0.2);
+      int row = static_cast<int>((child->y+25.6) / 0.2);      
 
       // check if each descendent is obstacle
       int map_index = twod_to_oned(col, row, width);
@@ -125,7 +124,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       }
 
       // check if each descendent is out of the boundary
-      if((child->x <-25.6)||(child->x > 25.4)||(child->y <-25.6)||(child->y > 25.4)){
+      if((col <0)||(col >= width)||(row <0)||(row >= height)){
   	closed_list.push_back(child);
 	continue;
       }
@@ -166,7 +165,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(int p=0; p < w*h ; p++){
       int node = map_data[p];
       if(node == 0){
-        x, y = oned_to_twod(node,w);
+        auto [x,y] = oned_to_twod(p,w);
         
         for(int i=0; i<3 ;i++){
           if(((x-1+i)<0)||((x-1+i)>(w-1))){
@@ -193,14 +192,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // map 1D array index to (x,y)
-  int oned_to_twod(int index, int w){
+  std::pair<int,int> oned_to_twod(int index, int w){
     int x;
     int y;
 
     y = index/w;
     x = index%w;
 
-    return x,y;
+    return {x,y};
   }
 
 }
