@@ -4,7 +4,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
-#incldue <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <unistd.h>
 #include <nav_msgs/msg/path.hpp>
 #include <rclcpp/rclcpp.hpp>
