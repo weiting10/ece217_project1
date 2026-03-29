@@ -19,7 +19,7 @@ void request_to_visualization_msgs_marker_array( const std::shared_ptr<rclcpp::N
   start_marker.ns = "request";
   start_marker.type = visualization_msgs::msg::Marker::SPHERE;
   start_marker.action = visualization_msgs::msg::Marker::ADD;
-  start_marker.pose.position.x = request->start.x;F
+  start_marker.pose.position.x = request->start.x;
   start_marker.pose.position.y = request->start.y;
   start_marker.pose.position.z = 0.0;
   start_marker.pose.orientation.x = 0.0;
