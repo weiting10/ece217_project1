@@ -4,8 +4,10 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
-#incldue <geometry_msgs/msg/pose2_d.hpp>
+#incldue <geometry_msgs/msg/pose_stamped.hpp>
 #include <unistd.h>
+#include <nav_msgs/msg/path.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace project1{
 
@@ -30,6 +32,11 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   // c space expansion
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
 
+  // ROS2 setup
+  rclcpp::init(argc, argv)
+  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
+  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path> path_publisher = node->create_publisher<nav_msgs::msg::Path>("planned_path",1);
+  sleep(1);
 
   // create pointers for start node and goal node
   std::shared_ptr< project1::SearchNode > start_node = std::make_shared< project1::SearchNode >( -20, 0);
@@ -54,6 +61,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   // creat shared pointer top
   std::shared_ptr< project1::SearchNode > top = nullptr;
 
+  
+
   // while the open_list isn't empty
   while( open_list.empty() == false ){
     
@@ -73,12 +82,28 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
         top=top->bp;
       }
 
-      rclcpp::init(argc,argv);
-	  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
-	  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::Pose2D>> pose2d_publisher = node->create_publisher<geometry_msgs::msg::Pose2D>("pose2d",1);
+	  //create a nav_msgs::msg::Path message
+	  nav_msgs::msg::Path path_msg;
+	  path_msg::header.frame_id = "map";
 
-	  sleep(1);
-	  geometry_msgs::msg::Pose
+	  while(top != nullptr){
+	    geometry_msgs::msg::PoseStamped pose_stamped;
+		pose_stamped.header.frame_id = "map";
+		pose_stamped.pose.position.x = top->x;
+		pose_stamped.pose.position.y = top->y;
+		pose_stamped.pose.position.z = 0.0;
+
+		pose_stamped.pose.orientation.z = sin(top->theta / 2.0);
+		pose_stamped.pose.orientation.w = cos(top->theta / 2.0);
+		final_path.push_front(pose_stamped);
+	    top = top->bp;
+	  }
+
+	  path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(final_path.begin(), final_path.end());
+
+	  //publish the path
+	  path_publisher->publish(path_msg);
+      sleep(2)
 	  
       return 0;
       
