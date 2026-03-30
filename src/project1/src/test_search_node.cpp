@@ -15,7 +15,7 @@ int twod_to_oned(double x, double y, int w);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 
-int process_map(const std::vector<int>& map_data, int width, int height, int argc, char** argv) {
+int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "Start processing map"<< std::endl;
 
   /*
@@ -32,10 +32,9 @@ int process_map(const std::vector<int>& map_data, int width, int height, int arg
   // c space expansion
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
 
-  // ROS2 setup
-  rclcpp::init(argc, argv);
+  // set up a publisher to publish the final_path
   std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path> path_publisher = node->create_publisher<nav_msgs::msg::Path>("planned_path",1);
+  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path>> path_publisher = node->create_publisher<nav_msgs::msg::Path>("planned_path",1);
   sleep(1);
 
   // create pointers for start node and goal node
