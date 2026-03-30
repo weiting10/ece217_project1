@@ -15,7 +15,7 @@ int twod_to_oned(double x, double y, int w);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 
-int process_map(const std::vector<int>& map_data, int width, int height) {
+int process_map(const std::vector<int>& map_data, int width, int height, int argc, char** argv) {
   std::cout << "Start processing map"<< std::endl;
 
   /*
