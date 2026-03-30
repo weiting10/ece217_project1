@@ -33,7 +33,7 @@ int process_map(const std::vector<int>& map_data, int width, int height, int arg
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
 
   // ROS2 setup
-  rclcpp::init(argc, argv)
+  rclcpp::init(argc, argv);
   std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
   std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path> path_publisher = node->create_publisher<nav_msgs::msg::Path>("planned_path",1);
   sleep(1);
@@ -84,7 +84,10 @@ int process_map(const std::vector<int>& map_data, int width, int height, int arg
 
 	  //create a nav_msgs::msg::Path message
 	  nav_msgs::msg::Path path_msg;
-	  path_msg::header.frame_id = "map";
+	  path_msg.header.frame_id = "map";
+
+	  //create a new deque for posestamped messages
+	  std::deque<geometry_msgs::msg::PoseStamped> pose_path;
 
 	  while(top != nullptr){
 	    geometry_msgs::msg::PoseStamped pose_stamped;
@@ -95,15 +98,15 @@ int process_map(const std::vector<int>& map_data, int width, int height, int arg
 
 		pose_stamped.pose.orientation.z = sin(top->theta / 2.0);
 		pose_stamped.pose.orientation.w = cos(top->theta / 2.0);
-		final_path.push_front(pose_stamped);
+		pose_path.push_front(pose_stamped);
 	    top = top->bp;
 	  }
 
-	  path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(final_path.begin(), final_path.end());
+	  path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
 
 	  //publish the path
 	  path_publisher->publish(path_msg);
-      sleep(2)
+      sleep(2);
 	  
       return 0;
       
