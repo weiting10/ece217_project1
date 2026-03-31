@@ -87,7 +87,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     */
 
     // check if the top node is the goal by checking if h==zero
-    if(top->h <= 1){
+    if(top->h <= 0.2){
       std::cout << "Goal is found!" << std::endl;
       
       // create a vector to store all the memory of the nodes in the path
