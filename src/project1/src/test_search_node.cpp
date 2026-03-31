@@ -64,9 +64,27 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
   // while the open_list isn't empty
   while( open_list.empty() == false ){
-    
+    std::cout << "open_list.size():" << open_list.size() << " closed_list.size():" << closed_list.size() << std::endl;
+
+
     // get the node with smallest f 
     top = open_list.front();
+
+    std::cout << "top:" << top->x << "," << top->y << "," << top->f << "," << top->g << "," << top->h << std::endl;
+
+    for( auto & open : open_list ){
+      //std::cout << "  open:" << open->x << "," << open->y << "," << open->theta << "," << open->f << "," << open->g << "," << open->h << std::endl;
+    }
+
+    for( auto & closed : closed_list ){
+      //std::cout << "  closed:" << closed->x << "," << closed->y << "," << closed->theta << "," << closed->f << "," << closed->g << "," << closed->h << std::endl;
+    }
+
+    //std::cout << std::endl;
+
+    if( open_list.size() > 10 ){
+       //exit(0);
+    }
 
     // check if the top node is the goal by checking if h==zero
     if(top->h <= 0.1){
@@ -126,10 +144,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) ;
-    b->h = sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) ;
-    c->h = sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) ;
-    d->h = sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) ;
+    a->h = 5*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) +fabs(goal_node->theta - a->theta));
+    b->h = 5*(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) ;
+    c->h = 5*(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) ;
+    d->h = 5*(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) ;
   
     // compute the distance from descendents to the start (g)
     a->g = 0.2 + abs(a->theta - a->bp->theta) + a->bp->g;

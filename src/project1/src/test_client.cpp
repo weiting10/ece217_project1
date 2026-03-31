@@ -114,7 +114,7 @@ int main( int argc, char* argv[]){
 	  	("start-theta", boost::program_options::value<double>()->default_value(0.0),"start theta value")
 	  	("goal-x", boost::program_options::value<double>()->default_value(20.0),"goal x value")
 	  	("goal-y", boost::program_options::value<double>()->default_value(0.0),"goal y value")
-	  	("goal-theta", boost::program_options::value<double>()->default_value(0.0),"goal theta value");
+	  	("goal-theta", boost::program_options::value<double>()->default_value(0.0),"goal theta value")
     		("output", boost::program_options::value<std::string>(), "output file");
 
   boost::program_options::variables_map vm;
@@ -171,12 +171,12 @@ int main( int argc, char* argv[]){
 
   visualization_msgs::msg::MarkerArray marker_array;
   request_to_visualization_msgs_marker_array( node, request, marker_array );
-  occupancy_grid_publisher->publish( request->map );
-  marker_array_publisher->publish( marker_array );
 
   rclcpp::Client<project1::srv::PlanningQuery>::FutureAndRequestId result = client->async_send_request( request );
   if( rclcpp::spin_until_future_complete( node, result ) == rclcpp::FutureReturnCode::SUCCESS ){
     RCLCPP_INFO( rclcpp::get_logger( "rclcpp" ), "Success in calling service" );
+    occupancy_grid_publisher->publish( request->map );
+    marker_array_publisher->publish( marker_array );
   } else{
     RCLCPP_INFO( rclcpp::get_logger( "rclcpp" ), "Failure in calling service" );
   }
@@ -187,3 +187,4 @@ int main( int argc, char* argv[]){
   
   return EXIT_SUCCESS;
 }
+
