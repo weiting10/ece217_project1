@@ -93,36 +93,36 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       // create a vector to store all the memory of the nodes in the path
       std::deque< std::shared_ptr< project1::SearchNode > > final_path;
 
+      //create a nav_msgs::msg::Path message
+      nav_msgs::msg::Path path_msg;
+      path_msg.header.frame_id = "map";
+
+      //create a new deque for posestamped messages
+      std::deque<geometry_msgs::msg::PoseStamped> pose_path;
+
       while(top != start_node->bp){
+	// print out the final path in the terminal
 	final_path.push_front(top);    
 	std::cout << "top:" << *top << std::endl;
         top=top->bp;
+        
+	//publish the path
+	geometry_msgs::msg::PoseStamped pose_stamped;
+	pose_stamped.header.frame_id = "map";
+	pose_stamped.pose.position.x = top->x;
+	pose_stamped.pose.position.y = top->y;
+	pose_stamped.pose.position.z = 0.0;
+
+	pose_stamped.pose.orientation.z = sin(top->theta / 2.0);
+	pose_stamped.pose.orientation.w = cos(top->theta / 2.0);
+	pose_path.push_front(pose_stamped);
+	top = top->bp;
       }
 
-	  //create a nav_msgs::msg::Path message
-	  nav_msgs::msg::Path path_msg;
-	  path_msg.header.frame_id = "map";
+      path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
 
-	  //create a new deque for posestamped messages
-	  std::deque<geometry_msgs::msg::PoseStamped> pose_path;
-
-	  while(top != nullptr){
-	    geometry_msgs::msg::PoseStamped pose_stamped;
-		pose_stamped.header.frame_id = "map";
-		pose_stamped.pose.position.x = top->x;
-		pose_stamped.pose.position.y = top->y;
-		pose_stamped.pose.position.z = 0.0;
-
-		pose_stamped.pose.orientation.z = sin(top->theta / 2.0);
-		pose_stamped.pose.orientation.w = cos(top->theta / 2.0);
-		pose_path.push_front(pose_stamped);
-	    top = top->bp;
-	  }
-
-	  path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
-
-	  //publish the path
-	  path_publisher->publish(path_msg);
+      //publish the path
+      path_publisher->publish(path_msg);
       sleep(2);
 	  
       return 0;
@@ -144,10 +144,10 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = 5*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) +fabs(goal_node->theta - a->theta));
-    b->h = 5*(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) ;
-    c->h = 5*(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) ;
-    d->h = 5*(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) ;
+    a->h = 5*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) + fabs(goal_node->theta - a->theta));
+    b->h = 5*(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) + fabs(goal_node->theta - b->theta));
+    c->h = 5*(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) + fabs(goal_node->theta - c->theta));
+    d->h = 5*(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) + fabs(goal_node->theta - d->theta));
   
     // compute the distance from descendents to the start (g)
     a->g = 0.2 + abs(a->theta - a->bp->theta) + a->bp->g;
