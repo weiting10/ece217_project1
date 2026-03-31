@@ -34,7 +34,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
   // set up a publisher to publish the final_path
   std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path>> path_publisher = node->create_publisher<nav_msgs::msg::Path>("planned_path",1);
+  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path>> path_publisher = node->create_publisher<nav_msgs::msg::Path>("plan",1);
   sleep(1);
 
   // create pointers for start node and goal node
@@ -96,6 +96,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       //create a nav_msgs::msg::Path message
       nav_msgs::msg::Path path_msg;
       path_msg.header.frame_id = "map";
+      //here many add the std_msg time_stamp
 
       //create a new deque for posestamped messages
       std::deque<geometry_msgs::msg::PoseStamped> pose_path;
@@ -104,7 +105,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	// print out the final path in the terminal
 	final_path.push_front(top);    
 	std::cout << "top:" << *top << std::endl;
-        top=top->bp;
         
 	//publish the path
 	geometry_msgs::msg::PoseStamped pose_stamped;
@@ -113,8 +113,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	pose_stamped.pose.position.y = top->y;
 	pose_stamped.pose.position.z = 0.0;
 
-	pose_stamped.pose.orientation.z = sin(top->theta / 2.0);
-	pose_stamped.pose.orientation.w = cos(top->theta / 2.0);
 	pose_path.push_front(pose_stamped);
 	top = top->bp;
       }
