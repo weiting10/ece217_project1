@@ -11,6 +11,7 @@
 
 namespace project1{
 
+// funciton declaration
 int twod_to_oned(int x, int y, int w);
 double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
