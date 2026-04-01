@@ -11,9 +11,11 @@
 
 namespace project1{
 
-int twod_to_oned(double x, double y, int w);
+int twod_to_oned(int x, int y, int w);
+double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
+int meter_to_grid(double a);
 
 int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "Start processing map"<< std::endl;
@@ -38,11 +40,11 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   sleep(1);
 
   // create pointers for start node and goal node
-  std::shared_ptr< project1::SearchNode > start_node = std::make_shared< project1::SearchNode >( -20, 0);
-  std::shared_ptr< project1::SearchNode > goal_node = std::make_shared< project1::SearchNode >(20, 0);
+  std::shared_ptr< project1::SearchNode > start_node = std::make_shared< project1::SearchNode >( meter_to_grid(-20.0), meter_to_grid(0));
+  std::shared_ptr< project1::SearchNode > goal_node = std::make_shared< project1::SearchNode >( meter_to_grid(20), meter_to_grid(0));
 
   // compute the h and f for start node
-  start_node->h = sqrt( std::pow( goal_node->x - start_node->x, 2.0 ) + std::pow( goal_node->y - start_node->y, 2.0 ) );
+  start_node->h = grid_to_meter(sqrt( std::pow( goal_node->x - start_node->x, 2.0 ) + std::pow( goal_node->y - start_node->y, 2.0 ) ));
   start_node->f = start_node->g + start_node->h;
 
   // print start node and goal node
@@ -70,7 +72,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     //std::cout << "top:" << top->x << "," << top->y << "," << top->f << "," << top->g << "," << top->h << std::endl;
 
-    /*
+   /* 
     for( auto & open : open_list ){
       std::cout << "  open:" << open->x << "," << open->y << "," << open->theta << "," << open->f << "," << open->g << "," << open->h << std::endl;
     }
@@ -81,7 +83,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     std::cout << std::endl;
 
-    if( closed_list.size() > 1000 ){
+    if( closed_list.size() > 10 ){
        exit(0);
     }
     */
@@ -121,6 +123,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
       //publish the path
       path_publisher->publish(path_msg);
+
       sleep(2);
 	  
       return 0;
@@ -136,34 +139,34 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     // std::cout << "top memory location:" << top << std::endl;
 
     // create descendents
-    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+0.2, M_PI/2 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-0.2, 3*M_PI/2 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+0.2, top->y, 0.0 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-0.2, top->y, M_PI , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > m = std::make_shared< project1::SearchNode>( top->x+0.2, top->y+0.2, M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > n = std::make_shared< project1::SearchNode>( top->x+0.2, top->y-0.2, -M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > p = std::make_shared< project1::SearchNode>( top->x-0.2, top->y+0.2, 3*M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > q = std::make_shared< project1::SearchNode>( top->x-0.2, top->y-0.2, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+1, M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-1, 3*M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+1, top->y, 0.0 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-1, top->y, M_PI , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > m = std::make_shared< project1::SearchNode>( top->x+1, top->y+1, M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > n = std::make_shared< project1::SearchNode>( top->x+1, top->y-1, -M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > p = std::make_shared< project1::SearchNode>( top->x-1, top->y+1, 3*M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< project1::SearchNode > q = std::make_shared< project1::SearchNode>( top->x-1, top->y-1, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = (sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 ) ) + fabs(goal_node->theta - a->theta));
-    b->h = (sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 ) ) + fabs(goal_node->theta - b->theta));
-    c->h = (sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 ) ) + fabs(goal_node->theta - c->theta));
-    d->h = (sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 ) ) + fabs(goal_node->theta - d->theta));
-    m->h = (sqrt( std::pow( goal_node->x - m->x, 2.0 ) + std::pow( goal_node->y - m->y, 2.0 ) ) + fabs(goal_node->theta - m->theta));
-    n->h = (sqrt( std::pow( goal_node->x - n->x, 2.0 ) + std::pow( goal_node->y - n->y, 2.0 ) ) + fabs(goal_node->theta - n->theta));
-    p->h = (sqrt( std::pow( goal_node->x - p->x, 2.0 ) + std::pow( goal_node->y - p->y, 2.0 ) ) + fabs(goal_node->theta - p->theta));
-    q->h = (sqrt( std::pow( goal_node->x - q->x, 2.0 ) + std::pow( goal_node->y - q->y, 2.0 ) ) + fabs(goal_node->theta - q->theta));
+    a->h = grid_to_meter(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) + fabs(goal_node->theta - a->theta);
+    b->h = grid_to_meter(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 )) ) + fabs(goal_node->theta - b->theta);
+    c->h = grid_to_meter(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 )) ) + fabs(goal_node->theta - c->theta);
+    d->h = grid_to_meter(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 )) ) + fabs(goal_node->theta - d->theta);
+    m->h = grid_to_meter(sqrt( std::pow( goal_node->x - m->x, 2.0 ) + std::pow( goal_node->y - m->y, 2.0 )) ) + fabs(goal_node->theta - m->theta);
+    n->h = grid_to_meter(sqrt( std::pow( goal_node->x - n->x, 2.0 ) + std::pow( goal_node->y - n->y, 2.0 )) ) + fabs(goal_node->theta - n->theta);
+    p->h = grid_to_meter(sqrt( std::pow( goal_node->x - p->x, 2.0 ) + std::pow( goal_node->y - p->y, 2.0 )) ) + fabs(goal_node->theta - p->theta);
+    q->h = grid_to_meter(sqrt( std::pow( goal_node->x - q->x, 2.0 ) + std::pow( goal_node->y - q->y, 2.0 )) ) + fabs(goal_node->theta - q->theta);
    
     // compute the distance from descendents to the start (g)
     a->g = 0.2 + abs(a->theta - a->bp->theta) + a->bp->g;
     b->g = 0.2 + abs(b->theta - b->bp->theta) + b->bp->g;
     c->g = 0.2 + abs(c->theta - c->bp->theta) + c->bp->g;
     d->g = 0.2 + abs(d->theta - d->bp->theta) + d->bp->g;
-    m->g = 0.2 + abs(m->theta - m->bp->theta) + m->bp->g;
-    n->g = 0.2 + abs(n->theta - n->bp->theta) + n->bp->g;
-    p->g = 0.2 + abs(p->theta - p->bp->theta) + p->bp->g;
-    q->g = 0.2 + abs(q->theta - q->bp->theta) + q->bp->g;
+    m->g = 0.2828 + abs(m->theta - m->bp->theta) + m->bp->g;
+    n->g = 0.2828 + abs(n->theta - n->bp->theta) + n->bp->g;
+    p->g = 0.2828 + abs(p->theta - p->bp->theta) + p->bp->g;
+    q->g = 0.2828 + abs(q->theta - q->bp->theta) + q->bp->g;
   
     // compute f by adding h and g for each descendent
     a->f = a->g +  a->h;
@@ -182,17 +185,17 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     for(auto& child:children){
        
       //convert (x,y) from meter unit to 1 per unit
-      int col = static_cast<int>((child->x+25.6) / 0.2);
-      int row = static_cast<int>((child->y+25.6) / 0.2);      
+      //int col = static_cast<int>((child->x+25.6) / 0.2);
+      //int row = static_cast<int>((child->y+25.6) / 0.2);      
 
       // check if each descendent is out of the boundary
-      if((col <0)||(col >= width)||(row <0)||(row >= height)){
+      if((child->x <0)||(child->x >= width)||(child->y <0)||(child->y >= height)){
         //closed_list.push_back(child);
         continue;
       }
 
       // check if each descendent is obstacle
-      int map_index = twod_to_oned(col, row, width);
+      int map_index = twod_to_oned(child->x, child->y, width);
       if(expanded_map_data[map_index] == -128){
         //closed_list.push_back(child);
 	continue;
@@ -201,7 +204,12 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       // check if each descendent is in the closed_list	    
       bool in_closed_list=0;
       for(auto& closed_node:closed_list){
-        if((fabs(child->x - closed_node->x)<0.1) && (fabs(child->y - closed_node->y)<0.1) && (fabs(child->theta - closed_node->theta)<0.2)){
+	
+        //compare the grid
+        //int closed_col = static_cast<int>((closed_node->x+25.6) / 0.2);
+        //int closed_row = static_cast<int>((closed_node->y+25.6) / 0.2);
+
+        if((child->x == closed_node->x) && (child->y == closed_node->y) && (fabs(child->theta - closed_node->theta)<0.2)){
 	  in_closed_list=1;
 	  break;
         }
@@ -209,7 +217,12 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
       bool in_open_list=0;
       for(auto& open_node:open_list){
-        if((fabs(child->x - open_node->x)<0.1)  && (fabs(child->y - open_node->y)<0.1)  && (fabs(child->theta - open_node->theta)<0.2)){
+
+	//compared the grid
+        //int open_col = static_cast<int>((open_node->x+25.6) / 0.2);
+        //int open_row = static_cast<int>((open_node->y+25.6) / 0.2);
+
+        if((child->x == open_node->x)  && (child->y == open_node->y)  && (fabs(child->theta - open_node->theta)<0.2)){
           in_open_list=1;
           break;
         }
@@ -261,7 +274,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   }
 
   // map (x,y) to 1D array index
-  int twod_to_oned(double x, double y, int w){
+  int twod_to_oned(int x, int y, int w){
     int index = y*w + x ;
     return index;
   }
@@ -276,6 +289,22 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     return {x,y};
   }
+
+  // convert from grid index to distance in meter
+  double grid_to_meter(int a){
+
+    double distance;
+    distance = static_cast<double>(a) * 0.2 - 25.6;
+
+    return distance;
+  }
+
+  int meter_to_grid(double a){
+    int grid;
+    grid = (a + 25.6)/0.2;
+    return grid;
+  }
+
 
 }
 

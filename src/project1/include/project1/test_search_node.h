@@ -10,11 +10,11 @@ namespace project1 {
   int process_map(const std::vector<int>& map_data, int width, int height);
   class SearchNode {
   public:
-    SearchNode( const double& xArg =0.0, const double& yArg = 0.0, const double& thetaArg = 0.0, const double& fArg = 0.0, const double& gArg = 0.0, const double& hArg = 0.0, const std::shared_ptr< SearchNode >& bpArg = nullptr);
+    SearchNode( const int& xArg =0, const int& yArg = 0, const double& thetaArg = 0.0, const double& fArg = 0.0, const double& gArg = 0.0, const double& hArg = 0.0, const std::shared_ptr< SearchNode >& bpArg = nullptr);
     SearchNode( const SearchNode& other ) = default;
     
-    double x;
-    double y;
+    int x;
+    int y;
 
     double theta;
     double f;
