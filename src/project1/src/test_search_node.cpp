@@ -44,7 +44,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   std::shared_ptr< project1::SearchNode > goal_node = std::make_shared< project1::SearchNode >( meter_to_grid(20), meter_to_grid(0));
 
   // compute the h and f for start node
-  start_node->h = grid_to_meter(sqrt( std::pow( goal_node->x - start_node->x, 2.0 ) + std::pow( goal_node->y - start_node->y, 2.0 ) ));
+  start_node->h = 0.2* (sqrt( std::pow( goal_node->x - start_node->x, 2.0 ) + std::pow( goal_node->y - start_node->y, 2.0 ) ));
   start_node->f = start_node->g + start_node->h;
 
   // print start node and goal node
@@ -72,7 +72,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     //std::cout << "top:" << top->x << "," << top->y << "," << top->f << "," << top->g << "," << top->h << std::endl;
 
-   /* 
+    
     for( auto & open : open_list ){
       std::cout << "  open:" << open->x << "," << open->y << "," << open->theta << "," << open->f << "," << open->g << "," << open->h << std::endl;
     }
@@ -86,7 +86,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     if( closed_list.size() > 10 ){
        exit(0);
     }
-    */
+    
 
     // check if the top node is the goal by checking if h==zero
     if(top->h <= 0.2){
@@ -107,12 +107,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 	// print out the final path in the terminal
 	final_path.push_front(top);    
 	std::cout << "top:" << *top << std::endl;
-        
+        std::cout << "grid_to_meter(top->x): " << grid_to_meter(top->x) << std::endl; 
+        std::cout << "grid_to_meter(top->y): " << grid_to_meter(top->y) << std::endl;
+
 	//publish the path
 	geometry_msgs::msg::PoseStamped pose_stamped;
 	pose_stamped.header.frame_id = "map";
-	pose_stamped.pose.position.x = top->x;
-	pose_stamped.pose.position.y = top->y;
+	pose_stamped.pose.position.x = grid_to_meter(top->x);
+	pose_stamped.pose.position.y = grid_to_meter(top->y);
 	pose_stamped.pose.position.z = 0.0;
 
 	pose_path.push_front(pose_stamped);
@@ -149,14 +151,22 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::shared_ptr< project1::SearchNode > q = std::make_shared< project1::SearchNode>( top->x-1, top->y-1, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    a->h = grid_to_meter(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) + fabs(goal_node->theta - a->theta);
-    b->h = grid_to_meter(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 )) ) + fabs(goal_node->theta - b->theta);
-    c->h = grid_to_meter(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 )) ) + fabs(goal_node->theta - c->theta);
-    d->h = grid_to_meter(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 )) ) + fabs(goal_node->theta - d->theta);
-    m->h = grid_to_meter(sqrt( std::pow( goal_node->x - m->x, 2.0 ) + std::pow( goal_node->y - m->y, 2.0 )) ) + fabs(goal_node->theta - m->theta);
-    n->h = grid_to_meter(sqrt( std::pow( goal_node->x - n->x, 2.0 ) + std::pow( goal_node->y - n->y, 2.0 )) ) + fabs(goal_node->theta - n->theta);
-    p->h = grid_to_meter(sqrt( std::pow( goal_node->x - p->x, 2.0 ) + std::pow( goal_node->y - p->y, 2.0 )) ) + fabs(goal_node->theta - p->theta);
-    q->h = grid_to_meter(sqrt( std::pow( goal_node->x - q->x, 2.0 ) + std::pow( goal_node->y - q->y, 2.0 )) ) + fabs(goal_node->theta - q->theta);
+    /*
+    std::cout << "goal_node->x = " << goal_node->x  << std::endl;
+    std::cout << "a->x = " << a->x << std::endl;
+    std::cout << "goal_node->y = " << goal_node->y  << std::endl;
+    std::cout << "a->y = " << a->y << std::endl;
+    std::cout << "grid to meter for a" << grid_to_meter(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) << std::endl;
+    */
+
+    a->h = 0.2*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) + fabs(goal_node->theta - a->theta);
+    b->h = 0.2*(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 )) ) + fabs(goal_node->theta - b->theta);
+    c->h = 0.2*(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 )) ) + fabs(goal_node->theta - c->theta);
+    d->h = 0.2*(sqrt( std::pow( goal_node->x - d->x, 2.0 ) + std::pow( goal_node->y - d->y, 2.0 )) ) + fabs(goal_node->theta - d->theta);
+    m->h = 0.2*(sqrt( std::pow( goal_node->x - m->x, 2.0 ) + std::pow( goal_node->y - m->y, 2.0 )) ) + fabs(goal_node->theta - m->theta);
+    n->h = 0.2*(sqrt( std::pow( goal_node->x - n->x, 2.0 ) + std::pow( goal_node->y - n->y, 2.0 )) ) + fabs(goal_node->theta - n->theta);
+    p->h = 0.2*(sqrt( std::pow( goal_node->x - p->x, 2.0 ) + std::pow( goal_node->y - p->y, 2.0 )) ) + fabs(goal_node->theta - p->theta);
+    q->h = 0.2*(sqrt( std::pow( goal_node->x - q->x, 2.0 ) + std::pow( goal_node->y - q->y, 2.0 )) ) + fabs(goal_node->theta - q->theta);
    
     // compute the distance from descendents to the start (g)
     a->g = 0.2 + abs(a->theta - a->bp->theta) + a->bp->g;
@@ -215,6 +225,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
         }
       }
 
+      // check if each descendent is in the open_list
       bool in_open_list=0;
       for(auto& open_node:open_list){
 
@@ -226,11 +237,19 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
           in_open_list=1;
           break;
         }
+      
+
       }
 
-      if((in_closed_list == 0)&&(in_open_list == 0)){
-        open_list.push_back(child);
+      if(in_closed_list == 0){
+        if(in_open_list == 0){
+          open_list.push_back(child);
+	}else if((in_open_list == 1)&&((child->f) < (open_node->y))){
+          open_list.push_back(child);
+        }
       }
+
+
 
     }
 
