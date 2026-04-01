@@ -244,7 +244,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       if(in_closed_list == 0){
         if(in_open_list == 0){
           open_list.push_back(child);
-	}else if((in_open_list == 1)&&((child->f) < (open_node->y))){
+	}else if(in_open_list == ){
           open_list.push_back(child);
         }
       }
