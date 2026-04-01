@@ -72,7 +72,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     //std::cout << "top:" << top->x << "," << top->y << "," << top->f << "," << top->g << "," << top->h << std::endl;
 
-    
+    /*
     for( auto & open : open_list ){
       std::cout << "  open:" << open->x << "," << open->y << "," << open->theta << "," << open->f << "," << open->g << "," << open->h << std::endl;
     }
@@ -86,7 +86,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     if( closed_list.size() > 10 ){
        exit(0);
     }
-    
+    */
 
     // check if the top node is the goal by checking if h==zero
     if(top->h <= 0.2){
@@ -102,14 +102,16 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
       //create a new deque for posestamped messages
       std::deque<geometry_msgs::msg::PoseStamped> pose_path;
+      std::cout << "The total cost is " << top->g << std::endl;
 
       while(top != start_node->bp){
 	// print out the final path in the terminal
-	final_path.push_front(top);    
+	final_path.push_front(top);   
+        /*	
 	std::cout << "top:" << *top << std::endl;
         std::cout << "grid_to_meter(top->x): " << grid_to_meter(top->x) << std::endl; 
         std::cout << "grid_to_meter(top->y): " << grid_to_meter(top->y) << std::endl;
-
+        */
 	//publish the path
 	geometry_msgs::msg::PoseStamped pose_stamped;
 	pose_stamped.header.frame_id = "map";
@@ -122,7 +124,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       }
 
       path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
-
       //publish the path
       path_publisher->publish(path_msg);
 
@@ -179,21 +180,24 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     q->g = 0.2828 + abs(q->theta - q->bp->theta) + q->bp->g;
   
     // compute f by adding h and g for each descendent
-    a->f = a->g +  a->h;
-    b->f = b->g +  b->h;
-    c->f = c->g +  c->h;
-    d->f = d->g +  d->h;
-    m->f = m->g +  m->h;
-    n->f = n->g +  n->h;
-    p->f = p->g +  p->h;
-    q->f = q->g +  q->h;
+    
+    a->f = a->g + 1.4* a->h;
+    b->f = b->g + 1.4* b->h;
+    c->f = c->g + 1.4* c->h;
+    d->f = d->g + 1.4* d->h;
+    m->f = m->g + 1.4* m->h;
+    n->f = n->g + 1.4* n->h;
+    p->f = p->g + 1.4* p->h;
+    q->f = q->g + 1.4* q->h;
     
     // create a vector to contain a,b,c,d
     std::vector<std::shared_ptr<project1::SearchNode>> children = {a,b,c,d,m,n,p,q};
 
     // check the four descendents
     for(auto& child:children){
-       
+      //std::cout << "child: " << child << std::endl;
+      //std::cout << "children: " << children << std::endl;
+      
       //convert (x,y) from meter unit to 1 per unit
       //int col = static_cast<int>((child->x+25.6) / 0.2);
       //int row = static_cast<int>((child->y+25.6) / 0.2);      
@@ -236,16 +240,15 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
         if((child->x == open_node->x)  && (child->y == open_node->y)  && (fabs(child->theta - open_node->theta)<0.2)){
           in_open_list=1;
           break;
-        }
-      
+        }    
 
       }
 
       if(in_closed_list == 0){
         if(in_open_list == 0){
           open_list.push_back(child);
-	}else if(in_open_list == ){
-          open_list.push_back(child);
+	//}else if(in_open_list == 1){
+         // open_list.push_back(child);
         }
       }
 
