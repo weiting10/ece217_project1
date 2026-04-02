@@ -33,12 +33,16 @@ void service_callback(const std::shared_ptr< project1::srv::PlanningQuery::Reque
 
   std::cout << std::endl;
 
-  RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Outgoing PlanningQuery::Response:");
   //auto time_used = node->get_clock()->now - request->map.header.stamp;
   //std::cout << "time used to find the path" << time_used << std::endl;
   auto elapsed = rclcpp::Clock(RCL_SYSTEM_TIME).now() - rclcpp::Time(request->map.header.stamp, RCL_SYSTEM_TIME);
   double seconds = elapsed.seconds();
-  std::cout << "Total time used: " << seconds << "s" << std::endl;
+  std::cout << "Total time used for grid search: " << seconds << "s" << std::endl;
+
+  project1::process_map_rrt(map_data, width, height);
+  std::cout << std::endl;
+
+  RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Outgoing PlanningQuery::Response:");
 
 
   return;
