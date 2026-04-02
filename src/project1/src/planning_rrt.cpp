@@ -9,6 +9,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <random>
+#include <chrono>
 
 namespace project1{
 
@@ -24,6 +25,10 @@ double random_double( double min, double max);
 
 
 int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
+
+  // keep record of the start time of this script
+  auto start = std::chrono::steady_clock::now();
+  auto end;
 
   //set the distance the new node is to the closest explored node
   double set_d = 1;
@@ -85,17 +90,47 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     random_node->y = random_double(-25.6,25.6);
     random_node->bp = nullptr;
 
-    std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+    closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
 
-    std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
+    connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
 
     std::cout << "The random node is " << random_node << std::endl;
     std::cout << "The closest node is " << closest_node << std::endl;
     std::cout << "The connected node is " << connected_node << std::endl;
 
-  closed_list.push_back(connected_node);
-	
+    closed_list.push_back(connected_node);
+
+    //check the time cost: if it takes more than 10 seconds, print "didn't find goal" and exit the program
+    end = std::chrono::steady_clock::now();
+    if((end - start) >10 ){
+      std::cout << "No goal is found within 10 seconds. Exit RRT search." << std::endl;
+      
+      return EXIT_FAILURE;
+    }
+
   }
+
+  // if goal is found, the while loop will end
+      while(connected_node != nullptr){
+        // print out the final path in the terminal
+        final_path.push_front(connected_node);
+        /*      
+        std::cout << "connected_node: " << *connected_node << std::endl;
+        */
+
+        //publish the path
+        geometry_msgs::msg::PoseStamped pose_stamped;
+        pose_stamped.header.frame_id = "map";
+        pose_stamped.pose.position.x = connected_node->x;
+        pose_stamped.pose.position.y = connected_node->y;
+        pose_stamped.pose.position.z = 0.0;
+
+        pose_path.push_front(pose_stamped);
+        connected = top->bp;
+      }
+
+
+
 
 }
 
