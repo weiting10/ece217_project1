@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <nav_msgs/msg/path.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <random>
 
 namespace project1{
 
@@ -19,6 +20,7 @@ std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
 std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
 std::shared_ptr<project1::SearchNode_rrt> find_connected_node(project1::SearchNode_rrt closed_node, project1::SearchNode_rrt random_node);
+double random_double( double min, double max);
 
 
 int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
@@ -43,8 +45,8 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
 
   // set up a publisher to publish the final_path
-  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("test_search_node_publisher");
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path>> path_publisher = node->create_publisher<nav_msgs::msg::Path>("plan",1);
+  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("search_node_rrt_publisher");
+  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Path>> path_publisher = node->create_publisher<nav_msgs::msg::Path>("plan_rrt",1);
   sleep(1);
 
   // create pointers for start node and goal node
@@ -59,13 +61,41 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   std::vector< std::shared_ptr< project1::SearchNode_rrt > > closed_list;
   closed_list.push_back(start_node);
 
+  // start creating random nodes and search
+  
+
+  std::shared_ptr<project1::SearchNode_rrt> random_node;
+  random_node->x = random_double(-25.6,25.6);
+  random_node->y = random_double(-25.6,25.6);
+  random_node->bp = nullptr;
+
   std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
 
   std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
 
+  std::cout << "The random node is " << random_node << std::endl;
+  std::cout << "The closest node is " << closest_node << std::endl;
+  std::cout << "The connected node is " << connected_node << std::endl;
+
+  closed_list.push_back(connected_node);
+
+  while(((connected_node->x) != (goal_node->x)) || ((connected_node->y) != (goal_node->y))){
+
+    random_node->x = random_double(-25.6,25.6);
+    random_node->y = random_double(-25.6,25.6);
+    random_node->bp = nullptr;
+
+    std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+
+    std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
+
+    std::cout << "The random node is " << random_node << std::endl;
+    std::cout << "The closest node is " << closest_node << std::endl;
+    std::cout << "The connected node is " << connected_node << std::endl;
+
   closed_list.push_back(connected_node);
 	
-
+  }
 
 }
 
@@ -176,4 +206,10 @@ std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<pr
     return grid;
   }
 
+  double random_double( double min, double max){
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_real_distribution<double> dist(min,max);
+
+    return dist(gen);
+  }
 

@@ -61,7 +61,7 @@ namespace project1 {
     double x;
     double y;
 
-    std::shared_ptr< SearchNode> bp;
+    std::shared_ptr< SearchNode_rrt> bp;
 
   };
 
