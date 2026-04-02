@@ -114,7 +114,8 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
       //closed_list.push_back(child);
       continue;
     }
-
+    
+    closed_list.push_back(connected_node);
   
     /*
     std::cout << "The random node is " << random_node << std::endl;
