@@ -66,7 +66,7 @@ namespace project1 {
   };
 
   inline std::ostream& operator<<(std::ostream& out, const SearchNode_rrt& other ){
-    out << "x:" << other.x << " y:" << " bp:" << other.bp;
+    out << "x:" << other.x << " y:" << other.y << " bp:" << other.bp;
     return out;
   }
 

@@ -86,7 +86,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
   closed_list.push_back(connected_node);
 
-  while(((connected_node->x) != (goal_node->x)) || ((connected_node->y) != (goal_node->y))){
+  while(fabs((connected_node->x) - (goal_node->x))>1 || fabs((connected_node->y)-(goal_node->y))>1){
 
     random_node->x = random_double(-25.6,25.6);
     random_node->y = random_double(-25.6,25.6);
@@ -95,10 +95,12 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     closest_node = find_closest_node(closed_list ,random_node);
 
     connected_node = find_connected_node(closest_node, random_node, set_d);
-
+  
+    /*
     std::cout << "The random node is " << random_node << std::endl;
     std::cout << "The closest node is " << closest_node << std::endl;
     std::cout << "The connected node is " << connected_node << std::endl;
+    */
 
     closed_list.push_back(connected_node);
 
@@ -113,7 +115,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   }
 
   // if goal is found, the while loop will end
-  
+  std::cout << "RRT Path is found!" << std::endl;  
   // create a vector to store all the memory of the nodes in the path
   std::deque< std::shared_ptr< project1::SearchNode_rrt > > final_path;
   //create a new deque for posestamped messages
@@ -127,9 +129,9 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   while(connected_node != nullptr){
     // print out the final path in the terminal
     final_path.push_front(connected_node);
-    /*      
+          
     std::cout << "connected_node: " << *connected_node << std::endl;
-    */
+    
 
     //publish the path
     geometry_msgs::msg::PoseStamped pose_stamped;
