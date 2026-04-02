@@ -33,7 +33,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   //set the distance the new node is to the closest explored node
   double set_d = 1;
 
-  std::cout << "Start processing map"<< std::endl;
+  std::cout << "Start processing map with RRT"<< std::endl;
 
   /*
   for(int i = 0; i< map_data.size(); i++){
@@ -41,10 +41,10 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   } */
 
   std::cout << std::endl;
-  std::cout << "process_map receives width: " << width << std::endl;
-  std::cout << "process_map receives height: " << height << std::endl;
+  std::cout << "process_map_rrt receives width: " << width << std::endl;
+  std::cout << "process_map_rrt receives height: " << height << std::endl;
 
-  std::cout << "start of test_search_node"<< std::endl << std::endl;
+  std::cout << "start of search_node_rrt"<< std::endl << std::endl;
 
   // c space expansion
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
@@ -72,17 +72,15 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   random_node->y = random_double(-25.6,25.6);
   random_node->bp = nullptr;
 
-
-
   std::shared_ptr<project1::SearchNode_rrt> closest_node = std::make_shared<project1::SearchNode_rrt>();
   closest_node = find_closest_node(closed_list , random_node);
 
   std::shared_ptr<project1::SearchNode_rrt> connected_node = std::make_shared<project1::SearchNode_rrt>();
   connected_node = find_connected_node(closest_node, random_node, set_d);
 
-  std::cout << "The random node is " << random_node << std::endl;
-  std::cout << "The closest node is " << closest_node << std::endl;
-  std::cout << "The connected node is " << connected_node << std::endl;
+  //std::cout << "The random node is " << random_node << std::endl;
+  //std::cout << "The closest node is " << closest_node << std::endl;
+  //std::cout << "The connected node is " << connected_node << std::endl;
 
   closed_list.push_back(connected_node);
 
@@ -104,13 +102,13 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     connected_node = find_connected_node(closest_node, random_node, set_d);
 
     // check if each descendent is obstacle
-    std::cout << "meter_to_grid(connected_node)->x: " << meter_to_grid(connected_node->x) << std::endl;
-    std::cout << "meter_to_grid(connected_node)->y: " << meter_to_grid(connected_node->y) << std::endl;
+    //std::cout << "meter_to_grid(connected_node)->x: " << meter_to_grid(connected_node->x) << std::endl;
+    //std::cout << "meter_to_grid(connected_node)->y: " << meter_to_grid(connected_node->y) << std::endl;
 
     int map_index = twod_to_oned(meter_to_grid(connected_node->x), meter_to_grid(connected_node->y), width);
-    std::cout << "map_index: " << map_index << std::endl;
+    //std::cout << "map_index: " << map_index << std::endl;
     if(expanded_map_data[map_index] == -128){
-      std::cout << "encounter obstacle" << std::endl;
+      //std::cout << "encounter obstacle" << std::endl;
       //closed_list.push_back(child);
       continue;
     }
@@ -127,6 +125,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
   // if goal is found, the while loop will end
   std::cout << "RRT Path is found!" << std::endl;  
+
   // create a vector to store all the memory of the nodes in the path
   std::deque< std::shared_ptr< project1::SearchNode_rrt > > final_path;
   //create a new deque for posestamped messages
@@ -138,23 +137,39 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   path_msg.header.frame_id = "map";
   path_msg.header.stamp = node->get_clock()->now();
   
+  std::cout << "The path found by RRT" << std::endl;
+
+  double rrt_cost=0;
+  double delta_theta;
+
   while(connected_node != nullptr){
     // print out the final path in the terminal
     final_path.push_front(connected_node);
           
-    std::cout << "connected_node: " << *connected_node << std::endl;
-    
-
+    std::cout << *connected_node << std::endl;
+   
     //publish the path
     geometry_msgs::msg::PoseStamped pose_stamped;
     pose_stamped.header.frame_id = "map";
     pose_stamped.pose.position.x = connected_node->x;
     pose_stamped.pose.position.y = connected_node->y;
     pose_stamped.pose.position.z = 0.0;
+    
+    if(connected_node->bp != nullptr){
+      delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y)) - std::atan((connected_node->bp->x - connected_node->bp->bp->x)/(connected_node->bp->y - connected_node->bp->bp->y));
+    }else if(connected_node->bp == nullptr){
+      delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y));
+    } 
+    rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
 
     pose_path.push_front(pose_stamped);
     connected_node = connected_node->bp;
   }
+
+  end = std::chrono::steady_clock::now();
+  std::cout << "Time used for RRT search is " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
+  std::cout << "Cost for RRT search is " << rrt_cost << std::endl;
+
 
   path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
   //publish the path
