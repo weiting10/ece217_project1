@@ -1,6 +1,6 @@
 #include <iostream>
 #include <math.h>
-#include "project1/test_search_node.h"
+#include "ECE217_project1_tan/test_search_node.h"
 #include <vector>
 #include <deque>
 #include <algorithm>
@@ -9,7 +9,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-namespace project1{
+namespace ECE217_project1_tan{
 
 // funciton declaration
 int twod_to_oned(int x, int y, int w);
@@ -40,8 +40,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   sleep(1);
 
   // create pointers for start node and goal node
-  std::shared_ptr< project1::SearchNode > start_node = std::make_shared< project1::SearchNode >( meter_to_grid(-20.0), meter_to_grid(0));
-  std::shared_ptr< project1::SearchNode > goal_node = std::make_shared< project1::SearchNode >( meter_to_grid(20), meter_to_grid(0));
+  std::shared_ptr< ECE217_project1_tan::SearchNode > start_node = std::make_shared< ECE217_project1_tan::SearchNode >( meter_to_grid(-20.0), meter_to_grid(0));
+  std::shared_ptr< ECE217_project1_tan::SearchNode > goal_node = std::make_shared< ECE217_project1_tan::SearchNode >( meter_to_grid(20), meter_to_grid(0));
 
   // compute the h and f for start node
   start_node->h = 0.2* (sqrt( std::pow( goal_node->x - start_node->x, 2.0 ) + std::pow( goal_node->y - start_node->y, 2.0 ) ));
@@ -52,12 +52,12 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   std::cout << "goal_node:" << *goal_node << std::endl << std::endl;
 
   // create open_list and closed_list and put start node into open_list
-  std::deque< std::shared_ptr< project1::SearchNode > > open_list;
+  std::deque< std::shared_ptr< ECE217_project1_tan::SearchNode > > open_list;
   open_list.push_back( start_node );
-  std::vector< std::shared_ptr< project1::SearchNode > > closed_list;
+  std::vector< std::shared_ptr< ECE217_project1_tan::SearchNode > > closed_list;
 
   // creat shared pointer top
-  std::shared_ptr< project1::SearchNode > top = nullptr;
+  std::shared_ptr< ECE217_project1_tan::SearchNode > top = nullptr;
 
   // while the open_list isn't empty
   while( open_list.empty() == false ){
@@ -78,7 +78,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       std::cout << "Goal is found!" << std::endl;
       
       // create a vector to store all the memory of the nodes in the path
-      std::deque< std::shared_ptr< project1::SearchNode > > final_path;
+      std::deque< std::shared_ptr< ECE217_project1_tan::SearchNode > > final_path;
 
       //create a nav_msgs::msg::Path message
       nav_msgs::msg::Path path_msg;
@@ -121,14 +121,14 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     closed_list.push_back(top);
 
     // create descendents
-    std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+1, M_PI/2 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > b = std::make_shared< project1::SearchNode>( top->x , top->y-1, 3*M_PI/2 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > c = std::make_shared< project1::SearchNode>( top->x+1, top->y, 0.0 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > d = std::make_shared< project1::SearchNode>( top->x-1, top->y, M_PI , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > m = std::make_shared< project1::SearchNode>( top->x+1, top->y+1, M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > n = std::make_shared< project1::SearchNode>( top->x+1, top->y-1, -M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > p = std::make_shared< project1::SearchNode>( top->x-1, top->y+1, 3*M_PI/4 , 0.0, 0.0, 0.0, top);
-    std::shared_ptr< project1::SearchNode > q = std::make_shared< project1::SearchNode>( top->x-1, top->y-1, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > a = std::make_shared< ECE217_project1_tan::SearchNode>( top->x , top->y+1, M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > b = std::make_shared< ECE217_project1_tan::SearchNode>( top->x , top->y-1, 3*M_PI/2 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > c = std::make_shared< ECE217_project1_tan::SearchNode>( top->x+1, top->y, 0.0 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > d = std::make_shared< ECE217_project1_tan::SearchNode>( top->x-1, top->y, M_PI , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > m = std::make_shared< ECE217_project1_tan::SearchNode>( top->x+1, top->y+1, M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > n = std::make_shared< ECE217_project1_tan::SearchNode>( top->x+1, top->y-1, -M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > p = std::make_shared< ECE217_project1_tan::SearchNode>( top->x-1, top->y+1, 3*M_PI/4 , 0.0, 0.0, 0.0, top);
+    std::shared_ptr< ECE217_project1_tan::SearchNode > q = std::make_shared< ECE217_project1_tan::SearchNode>( top->x-1, top->y-1, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
     a->h = 0.2*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) + fabs(goal_node->theta - a->theta);
@@ -161,7 +161,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     q->f = q->g + 1.4* q->h;
     
     // create a vector to contain a,b,c,d
-    std::vector<std::shared_ptr<project1::SearchNode>> children = {a,b,c,d,m,n,p,q};
+    std::vector<std::shared_ptr<ECE217_project1_tan::SearchNode>> children = {a,b,c,d,m,n,p,q};
 
     // check the four descendents
     for(auto& child:children){
@@ -205,7 +205,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     }
 
   // sort the open list
-    std::sort( open_list.begin(), open_list.end(), []( const std::shared_ptr< project1::SearchNode >& firstArg, const std::shared_ptr< project1::SearchNode >& secondArg ) { return ( firstArg->f < secondArg->f ); } );
+    std::sort( open_list.begin(), open_list.end(), []( const std::shared_ptr< ECE217_project1_tan::SearchNode >& firstArg, const std::shared_ptr< ECE217_project1_tan::SearchNode >& secondArg ) { return ( firstArg->f < secondArg->f ); } );
     }
     
     std::cout << "No path is found" << std::endl;

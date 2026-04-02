@@ -1,10 +1,10 @@
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
-#include "project1/srv/planning_query.hpp"
-#include "project1/test_search_node.h"
+#include "ECE217_project1_tan/srv/planning_query.hpp"
+#include "ECE217_project1_tan/test_search_node.h"
 
-void service_callback(const std::shared_ptr< project1::srv::PlanningQuery::Request> request,
-		const std::shared_ptr< project1::srv::PlanningQuery::Response> response){
+void service_callback(const std::shared_ptr< ECE217_project1_tan::srv::PlanningQuery::Request> request,
+		const std::shared_ptr< ECE217_project1_tan::srv::PlanningQuery::Response> response){
   RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Incoming PlanningQuery::Request");
   
   //printing the map data out
@@ -25,10 +25,10 @@ void service_callback(const std::shared_ptr< project1::srv::PlanningQuery::Reque
   int height = request->map.info.height;
   
   //pass the map data, width , and height to the process_map function, and generate a path
-  project1::process_map(map_data, width, height);
+  ECE217_project1_tan::process_map(map_data, width, height);
   std::cout << std::endl;
 
-  project1::process_map_rrt(map_data, width, height);
+  ECE217_project1_tan::process_map_rrt(map_data, width, height);
   std::cout << std::endl;
 
   RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Outgoing PlanningQuery::Response:");
@@ -42,9 +42,9 @@ int main( int argc, char* argv[]){
   rclcpp::init(argc,argv);
 
 
-  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("project1_server");
+  std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("ECE217_project1_tan_server");
 
-  rclcpp::Service<project1::srv::PlanningQuery>::SharedPtr service = node->create_service<project1::srv::PlanningQuery>( "planning_query", &service_callback);
+  rclcpp::Service<ECE217_project1_tan::srv::PlanningQuery>::SharedPtr service = node->create_service<ECE217_project1_tan::srv::PlanningQuery>( "planning_query", &service_callback);
 
   RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Ready to generate plans.");
 

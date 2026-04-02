@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(project1)
+project(ECE217_project1_tan)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -31,12 +31,12 @@ include_directories(
   ${Boost_INCLUDE_DIR}
 )
 
-add_library(project1_library
+add_library(ECE217_project1_tan_library
   src/${PROJECT_NAME}/search_node.cpp
   src/test_search_node.cpp
   src/planning_rrt.cpp
 )
-ament_target_dependencies(project1_library rclcpp geometry_msgs nav_msgs std_msgs visualization_msgs)
+ament_target_dependencies(ECE217_project1_tan_library rclcpp geometry_msgs nav_msgs std_msgs visualization_msgs)
 
 
 set(dependencies "rclcpp" "pluginlib" "builtin_interfaces" "std_msgs" "geometry_msgs" "nav_msgs" "visualization_msgs")
@@ -67,7 +67,7 @@ ament_target_dependencies(test_subscriber rclcpp geometry_msgs)
 target_link_libraries(test_subscriber ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 add_executable(test_server src/test_server.cpp 
-			   src/project1/search_node.cpp 
+			   src/ECE217_project1_tan/search_node.cpp 
 			   src/test_search_node.cpp
 			   src/planning_rrt.cpp
 )
@@ -76,7 +76,7 @@ target_include_directories(test_server PUBLIC
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 target_compile_features(test_server PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(test_server rclcpp geometry_msgs nav_msgs visualization_msgs)
-target_link_libraries(test_server ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} project1_library)
+target_link_libraries(test_server ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} ECE217_project1_tan_library)
 
 add_executable(test_client src/test_client.cpp)
 target_include_directories(test_client PUBLIC
@@ -95,7 +95,7 @@ install(TARGETS
 	test_client
         DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS project1_library
+install(TARGETS ECE217_project1_tan_library
 	EXPORT 
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
