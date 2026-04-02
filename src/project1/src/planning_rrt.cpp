@@ -125,7 +125,8 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   //create a nav_msgs::msg::Path message
   nav_msgs::msg::Path path_msg;
   path_msg.header.frame_id = "map";
-
+  path_msg.header.stamp = node->get_clock()->now();
+  
   while(connected_node != nullptr){
     // print out the final path in the terminal
     final_path.push_front(connected_node);
@@ -147,9 +148,10 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
   //publish the path
   path_publisher->publish(path_msg);
-      
+  
+  rclcpp::spin_some(node);  
   sleep(2);
-
+  rclcpp::spin_some(node);
 
   return EXIT_SUCCESS;
 
