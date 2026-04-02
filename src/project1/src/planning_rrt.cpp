@@ -19,8 +19,8 @@ double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
-std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
-std::shared_ptr<project1::SearchNode_rrt> find_connected_node(project1::SearchNode_rrt closed_node, project1::SearchNode_rrt random_node);
+std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closed_node, std::shared_ptr<project1::SearchNode_rrt> random_node, double set_d);
 double random_double( double min, double max);
 
 
@@ -67,14 +67,18 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   closed_list.push_back(start_node);
 
   // start creating random nodes and search
-  std::shared_ptr<project1::SearchNode_rrt> random_node;
+  std::shared_ptr<project1::SearchNode_rrt> random_node = std::make_shared<project1::SearchNode_rrt>();
   random_node->x = random_double(-25.6,25.6);
   random_node->y = random_double(-25.6,25.6);
   random_node->bp = nullptr;
 
-  std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(closed_list , random_node);
 
-  std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(closest_node, random_node);
+
+  std::shared_ptr<project1::SearchNode_rrt> closest_node = std::make_shared<project1::SearchNode_rrt>();
+  closest_node = find_closest_node(closed_list , random_node);
+
+  std::shared_ptr<project1::SearchNode_rrt> connected_node = std::make_shared<project1::SearchNode_rrt>();
+  connected_node = find_connected_node(closest_node, random_node, set_d);
 
   std::cout << "The random node is " << random_node << std::endl;
   std::cout << "The closest node is " << closest_node << std::endl;
@@ -90,7 +94,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
     closest_node = find_closest_node(closed_list ,random_node);
 
-    connected_node = find_connected_node(closest_node, random_node);
+    connected_node = find_connected_node(closest_node, random_node, set_d);
 
     std::cout << "The random node is " << random_node << std::endl;
     std::cout << "The closest node is " << closest_node << std::endl;
@@ -100,7 +104,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
     //check the time cost: if it takes more than 10 seconds, print "didn't find goal" and exit the program
     end = std::chrono::steady_clock::now();
-    if((end - start) >10 ){
+    if((end - start) > std::chrono::seconds(10) ){
       std::cout << "No goal is found within 10 seconds. Exit RRT search." << std::endl;
       
       return EXIT_FAILURE;
@@ -158,7 +162,7 @@ std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::sha
   double distance;
 
   for(auto closed_node : closed_list){
-    distance = sqrt(std::pow(random_node->x - closed_node->x,2.0) + std::pow(random_node->y - closed_node->y), 2.0);
+    distance = sqrt(std::pow(random_node->x - closed_node->x,2.0) + std::pow(random_node->y - closed_node->y, 2.0));
     if(distance < shortest_distance){
       shortest_distance = distance;
       closest_node = closed_node;
@@ -170,11 +174,11 @@ std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::sha
 }	
 
 
-std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node){
+std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node, double set_d){
  
   std::shared_ptr<project1::SearchNode_rrt> connected_node;
   
-  double big_diagonal = sqrt(std::pow(random_node->x - closest_node->x,2.0) + std::pow(random_node->y - closest_node->y), 2.0);
+  double big_diagonal = sqrt(std::pow(random_node->x - closest_node->x,2.0) + std::pow(random_node->y - closest_node->y, 2.0));
   double big_x = random_node->x - closest_node->x;
   double big_y = random_node->y - closest_node->y;
 
@@ -185,82 +189,10 @@ std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<pr
   return connected_node;
 }
 
-
-
-
-
-
-
-  // c space expansion: assuming 0 is the obstacles
-
-  std::vector<int> c_space_expansion(std::vector<int> map_data, int w, int h){
-    std::vector<int> expanded_obstacle(w*h, 127);
-
-    int x;
-    int y;
-    int index;
-
-    for(int p=0; p < w*h ; p++){
-      int node = map_data[p];
-      if(node == -128){
-        auto [x,y] = oned_to_twod(p,w);
-        for(int i=0; i<3 ;i++){
-          if(((x-1+i)<0)||((x-1+i)>(w-1))){
-            continue;
-          }
-
-          for(int j=0; j<3 ;j++){
-            if(((y-1+j)<0)||((y-1+j)>(h-1))){
-              continue;
-            }
-
-            index = twod_to_oned(x-1+i,y-1+j,w);
-            expanded_obstacle[index]=-128;
-
-          }
-        }
-      }
-    }
-    return expanded_obstacle;
-  }
-
-
-  // map (x,y) to 1D array index
-  int twod_to_oned(int x, int y, int w){
-    int index = y*w + x ;
-    return index;
-  }
-
-  // map 1D array index to (x,y)
-  std::pair<int,int> oned_to_twod(int index, int w){
-    int x;
-    int y;
-
-    y = index/w;
-    x = index%w;
-
-    return {x,y};
-  }
-
-  // convert from grid index to distance in meter
-  double grid_to_meter(int a){
-
-    double distance;
-    distance = static_cast<double>(a) * 0.2 - 25.6;
-
-    return distance;
-  }
-
-  int meter_to_grid(double a){
-    int grid;
-    grid = (a + 25.6)/0.2;
-    return grid;
-  }
-
   double random_double( double min, double max){
     static std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<double> dist(min,max);
 
     return dist(gen);
   }
-
+}
