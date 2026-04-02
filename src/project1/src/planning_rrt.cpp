@@ -139,10 +139,10 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   
   std::cout << "The path found by RRT" << std::endl;
 
-  double rrt_cost=0;
+  double rrt_cost=set_d;
   double delta_theta;
 
-  while(connected_node != nullptr){
+  while(connected_node->bp != nullptr){
     // print out the final path in the terminal
     final_path.push_front(connected_node);
           
@@ -154,22 +154,34 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     pose_stamped.pose.position.x = connected_node->x;
     pose_stamped.pose.position.y = connected_node->y;
     pose_stamped.pose.position.z = 0.0;
+    std::cout<< "pointer 1" << std::endl;
     
-    if(connected_node->bp != nullptr){
+
+    if(connected_node->bp->bp != nullptr){
+      std::cout<< "pointer 2" << std::endl;
       delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y)) - std::atan((connected_node->bp->x - connected_node->bp->bp->x)/(connected_node->bp->y - connected_node->bp->bp->y));
+      rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
+      std::cout<< "pointer 3" << std::endl;
+
     }else if(connected_node->bp == nullptr){
-      delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y));
+      std::cout<< "pointer 4" << std::endl;
+
+      //delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y));
     } 
-    rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
+        
+    std::cout<< "pointer 5" << std::endl;
+
+    //rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
 
     pose_path.push_front(pose_stamped);
     connected_node = connected_node->bp;
   }
 
+  
   end = std::chrono::steady_clock::now();
   std::cout << "Time used for RRT search is " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
   std::cout << "Cost for RRT search is " << rrt_cost << std::endl;
-
+ 
 
   path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
   //publish the path
