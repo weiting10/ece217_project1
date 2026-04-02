@@ -29,7 +29,7 @@ namespace project1 {
   };
 
   inline std::ostream& operator<<(std::ostream& out, const SearchNode& other ){
-    out << "x:" << other.x << " y:" << other.y << "theta: " << other.theta <<  " f:" << other.f << " g:" << other.g << " h:"  << other.h << " bp:" << other.bp;
+    out << "x:" << other.x << " y:" << other.y << " theta: " << other.theta <<  " f:" << other.f << " g:" << other.g << " h:"  << other.h << " bp:" << other.bp;
     return out;
   }
 

@@ -33,12 +33,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   //set the distance the new node is to the closest explored node
   double set_d = 1;
 
-  std::cout << "Start processing map with RRT"<< std::endl;
-
-  /*
-  for(int i = 0; i< map_data.size(); i++){
-    std::cout << map_data[i] << " ";
-  } */
+  std::cout << std::endl << std::endl << "Start of RRT Search"<< std::endl;
 
   std::cout << std::endl;
   std::cout << "process_map_rrt receives width: " << width << std::endl;
@@ -78,10 +73,6 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   std::shared_ptr<project1::SearchNode_rrt> connected_node = std::make_shared<project1::SearchNode_rrt>();
   connected_node = find_connected_node(closest_node, random_node, set_d);
 
-  //std::cout << "The random node is " << random_node << std::endl;
-  //std::cout << "The closest node is " << closest_node << std::endl;
-  //std::cout << "The connected node is " << connected_node << std::endl;
-
   closed_list.push_back(connected_node);
 
   while(fabs((connected_node->x) - (goal_node->x))>1 || fabs((connected_node->y)-(goal_node->y))>1){
@@ -101,26 +92,13 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
     connected_node = find_connected_node(closest_node, random_node, set_d);
 
-    // check if each descendent is obstacle
-    //std::cout << "meter_to_grid(connected_node)->x: " << meter_to_grid(connected_node->x) << std::endl;
-    //std::cout << "meter_to_grid(connected_node)->y: " << meter_to_grid(connected_node->y) << std::endl;
-
     int map_index = twod_to_oned(meter_to_grid(connected_node->x), meter_to_grid(connected_node->y), width);
-    //std::cout << "map_index: " << map_index << std::endl;
     if(expanded_map_data[map_index] == -128){
-      //std::cout << "encounter obstacle" << std::endl;
-      //closed_list.push_back(child);
       continue;
     }
     
     closed_list.push_back(connected_node);
   
-    /*
-    std::cout << "The random node is " << random_node << std::endl;
-    std::cout << "The closest node is " << closest_node << std::endl;
-    std::cout << "The connected node is " << connected_node << std::endl;
-    */
-
   }
 
   // if goal is found, the while loop will end
@@ -146,7 +124,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     // print out the final path in the terminal
     final_path.push_front(connected_node);
           
-    std::cout << *connected_node << std::endl;
+    //std::cout << *connected_node << std::endl;
    
     //publish the path
     geometry_msgs::msg::PoseStamped pose_stamped;
@@ -154,22 +132,14 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     pose_stamped.pose.position.x = connected_node->x;
     pose_stamped.pose.position.y = connected_node->y;
     pose_stamped.pose.position.z = 0.0;
-    std::cout<< "pointer 1" << std::endl;
     
-
     if(connected_node->bp->bp != nullptr){
-      std::cout<< "pointer 2" << std::endl;
       delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y)) - std::atan((connected_node->bp->x - connected_node->bp->bp->x)/(connected_node->bp->y - connected_node->bp->bp->y));
       rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
-      std::cout<< "pointer 3" << std::endl;
 
-    }else if(connected_node->bp == nullptr){
-      std::cout<< "pointer 4" << std::endl;
-
-      //delta_theta = std::atan((connected_node->x - connected_node->bp->x)/(connected_node->y - connected_node->bp->y));
-    } 
+    }else if(connected_node->bp == nullptr){} 
         
-    std::cout<< "pointer 5" << std::endl;
+
 
     //rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
 
@@ -192,8 +162,6 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   rclcpp::spin_some(node);
 
   return EXIT_SUCCESS;
-
-
 }
 
 

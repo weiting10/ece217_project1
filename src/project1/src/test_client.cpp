@@ -119,7 +119,7 @@ int main( int argc, char* argv[]){
 
   boost::program_options::variables_map vm;
   boost::program_options::store(
-    boost::program_options::parse_command_line( argc, argv, desc ), vm );
+  boost::program_options::parse_command_line( argc, argv, desc ), vm );
   boost::program_options::notify(vm);
 
   if(vm.count("help")){
@@ -130,8 +130,6 @@ int main( int argc, char* argv[]){
   rclcpp::init( argc, argv);
 
   std::shared_ptr< rclcpp::Node > node = rclcpp::Node::make_shared("project1_client");
-
-  //std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid_<std::allocator<void> >, std::allocator<void> > > occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", 1 );
 
   auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();
   auto occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", qos);

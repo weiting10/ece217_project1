@@ -15,10 +15,6 @@ void service_callback(const std::shared_ptr< project1::srv::PlanningQuery::Reque
   std::cout << "request map height: " << request->map.info.height << std::endl;
   std::cout << "request map data:" <<  std::endl;
 
-  //to print out the map data
-  //for(size_t i = 0; i < request->map.data.size(); i++){
-    //std::cout << static_cast<int>(request->map.data[i]) << " ";
-
   // store the data of the map to map_data
   std::vector<int> map_data;
   for(auto val : request->map.data){
@@ -30,14 +26,7 @@ void service_callback(const std::shared_ptr< project1::srv::PlanningQuery::Reque
   
   //pass the map data, width , and height to the process_map function, and generate a path
   project1::process_map(map_data, width, height);
-
   std::cout << std::endl;
-
-  //auto time_used = node->get_clock()->now - request->map.header.stamp;
-  //std::cout << "time used to find the path" << time_used << std::endl;
-  auto elapsed = rclcpp::Clock(RCL_SYSTEM_TIME).now() - rclcpp::Time(request->map.header.stamp, RCL_SYSTEM_TIME);
-  double seconds = elapsed.seconds();
-  std::cout << "Total time used for grid search: " << seconds << "s" << std::endl;
 
   project1::process_map_rrt(map_data, width, height);
   std::cout << std::endl;

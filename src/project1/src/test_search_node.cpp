@@ -19,18 +19,17 @@ std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
 
 int process_map(const std::vector<int>& map_data, int width, int height) {
-  std::cout << "Start processing map"<< std::endl;
+  // keep record of the start time of this script
+  auto start = std::chrono::steady_clock::now();
+  auto end = std::chrono::steady_clock::now();
 
-  /*
-  for(int i = 0; i< map_data.size(); i++){
-    std::cout << map_data[i] << " ";
-  } */ 
+  std::cout << "Start processing map"<< std::endl;
 
   std::cout << std::endl;
   std::cout << "process_map receives width: " << width << std::endl;
-  std::cout << "process_map receives height: " << height << std::endl;
+  std::cout << "process_map receives height: " << height << std::endl << std::endl;
 
-  std::cout << "start of test_search_node"<< std::endl << std::endl;
+  std::cout << "Start of A Star Search"<< std::endl << std::endl;
 
   // c space expansion
   std::vector<int> expanded_map_data = c_space_expansion(map_data, width, height);
@@ -57,37 +56,22 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
   open_list.push_back( start_node );
   std::vector< std::shared_ptr< project1::SearchNode > > closed_list;
 
-  //std::cout << "open_list" << open_list << std::endl;
-  //std::cout << "closed_list" << closed_list << std::endl;
-
   // creat shared pointer top
   std::shared_ptr< project1::SearchNode > top = nullptr;
 
   // while the open_list isn't empty
   while( open_list.empty() == false ){
-    //std::cout << "open_list.size():" << open_list.size() << " closed_list.size():" << closed_list.size() << std::endl;
+   	 
+    //check the time cost: if it takes more than 10 seconds, print "didn't find goal" and exit the program
+    end = std::chrono::steady_clock::now();
+    if((end - start) > std::chrono::seconds(10) ){
+      std::cout << "No goal is found within 10 seconds. Exit RRT search." << std::endl;
 
+      return EXIT_FAILURE;
+    }
 
     // get the node with smallest f 
     top = open_list.front();
-
-    //std::cout << "top:" << top->x << "," << top->y << "," << top->f << "," << top->g << "," << top->h << std::endl;
-
-    /*
-    for( auto & open : open_list ){
-      std::cout << "  open:" << open->x << "," << open->y << "," << open->theta << "," << open->f << "," << open->g << "," << open->h << std::endl;
-    }
-
-    for( auto & closed : closed_list ){
-      std::cout << "  closed:" << closed->x << "," << closed->y << "," << closed->theta << "," << closed->f << "," << closed->g << "," << closed->h << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    if( closed_list.size() > 10 ){
-       exit(0);
-    }
-    */
 
     // check if the top node is the goal by checking if h==zero
     if(top->h <= 0.2){
@@ -99,20 +83,18 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       //create a nav_msgs::msg::Path message
       nav_msgs::msg::Path path_msg;
       path_msg.header.frame_id = "map";
-      //here many add the std_msg time_stamp
 
       //create a new deque for posestamped messages
       std::deque<geometry_msgs::msg::PoseStamped> pose_path;
-      std::cout << "The total cost is " << top->g << std::endl;
+
+      end = std::chrono::steady_clock::now();
+      std::cout << "Time used for A Star Search is " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
+      std::cout << "Cost for A Star Search is " << top->g << std::endl;
 
       while(top != start_node->bp){
 	// print out the final path in the terminal
 	final_path.push_front(top);   
-        /*	
-	std::cout << "top:" << *top << std::endl;
-        std::cout << "grid_to_meter(top->x): " << grid_to_meter(top->x) << std::endl; 
-        std::cout << "grid_to_meter(top->y): " << grid_to_meter(top->y) << std::endl;
-        */
+	
 	//publish the path
 	geometry_msgs::msg::PoseStamped pose_stamped;
 	pose_stamped.header.frame_id = "map";
@@ -137,10 +119,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     // pop the first node in the open_list and save top to the closed_list
     open_list.pop_front();
     closed_list.push_back(top);
-    
-    // print top location and its memeory location
-    // std::cout << "top:" << *top << std::endl;
-    // std::cout << "top memory location:" << top << std::endl;
 
     // create descendents
     std::shared_ptr< project1::SearchNode > a = std::make_shared< project1::SearchNode>( top->x , top->y+1, M_PI/2 , 0.0, 0.0, 0.0, top);
@@ -153,14 +131,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     std::shared_ptr< project1::SearchNode > q = std::make_shared< project1::SearchNode>( top->x-1, top->y-1, 5*M_PI/4 , 0.0, 0.0, 0.0, top);
 
     // compute the distance from descendents to the goal (h)
-    /*
-    std::cout << "goal_node->x = " << goal_node->x  << std::endl;
-    std::cout << "a->x = " << a->x << std::endl;
-    std::cout << "goal_node->y = " << goal_node->y  << std::endl;
-    std::cout << "a->y = " << a->y << std::endl;
-    std::cout << "grid to meter for a" << grid_to_meter(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) << std::endl;
-    */
-
     a->h = 0.2*(sqrt( std::pow( goal_node->x - a->x, 2.0 ) + std::pow( goal_node->y - a->y, 2.0 )) ) + fabs(goal_node->theta - a->theta);
     b->h = 0.2*(sqrt( std::pow( goal_node->x - b->x, 2.0 ) + std::pow( goal_node->y - b->y, 2.0 )) ) + fabs(goal_node->theta - b->theta);
     c->h = 0.2*(sqrt( std::pow( goal_node->x - c->x, 2.0 ) + std::pow( goal_node->y - c->y, 2.0 )) ) + fabs(goal_node->theta - c->theta);
@@ -181,7 +151,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     q->g = 0.2828 + abs(q->theta - q->bp->theta) + q->bp->g;
   
     // compute f by adding h and g for each descendent
-    
     a->f = a->g + 1.4* a->h;
     b->f = b->g + 1.4* b->h;
     c->f = c->g + 1.4* c->h;
@@ -196,13 +165,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
 
     // check the four descendents
     for(auto& child:children){
-      //std::cout << "child: " << child << std::endl;
-      //std::cout << "children: " << children << std::endl;
-      
-      //convert (x,y) from meter unit to 1 per unit
-      //int col = static_cast<int>((child->x+25.6) / 0.2);
-      //int row = static_cast<int>((child->y+25.6) / 0.2);      
-
       // check if each descendent is out of the boundary
       if((child->x <0)||(child->x >= width)||(child->y <0)||(child->y >= height)){
         //closed_list.push_back(child);
@@ -219,11 +181,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       // check if each descendent is in the closed_list	    
       bool in_closed_list=0;
       for(auto& closed_node:closed_list){
-	
-        //compare the grid
-        //int closed_col = static_cast<int>((closed_node->x+25.6) / 0.2);
-        //int closed_row = static_cast<int>((closed_node->y+25.6) / 0.2);
-
         if((child->x == closed_node->x) && (child->y == closed_node->y) && (fabs(child->theta - closed_node->theta)<0.2)){
 	  in_closed_list=1;
 	  break;
@@ -233,11 +190,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       // check if each descendent is in the open_list
       bool in_open_list=0;
       for(auto& open_node:open_list){
-
-	//compared the grid
-        //int open_col = static_cast<int>((open_node->x+25.6) / 0.2);
-        //int open_row = static_cast<int>((open_node->y+25.6) / 0.2);
-
         if((child->x == open_node->x)  && (child->y == open_node->y)  && (fabs(child->theta - open_node->theta)<0.2)){
           in_open_list=1;
           break;
@@ -248,13 +200,8 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
       if(in_closed_list == 0){
         if(in_open_list == 0){
           open_list.push_back(child);
-	//}else if(in_open_list == 1){
-         // open_list.push_back(child);
         }
       }
-
-
-
     }
 
   // sort the open list
@@ -263,7 +210,6 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     
     std::cout << "No path is found" << std::endl;
     return 0;
-	
   }
 
   // c space expansion: assuming 0 is the obstacles
