@@ -19,8 +19,8 @@ double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
-std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
-std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closed_node, std::shared_ptr<project1::SearchNode_rrt> random_node, double set_d);
+std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>>& closed_list , std::shared_ptr<project1::SearchNode_rrt>& random_node);
+std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt>& closed_node, std::shared_ptr<project1::SearchNode_rrt>& random_node, double set_d);
 double random_double( double min, double max);
 
 
@@ -155,7 +155,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 }
 
 
-std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node){
+std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>>& closed_list , std::shared_ptr<project1::SearchNode_rrt>& random_node){
 
   double shortest_distance = 51.2;
   std::shared_ptr<project1::SearchNode_rrt> closest_node;
@@ -174,9 +174,9 @@ std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::sha
 }	
 
 
-std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node, double set_d){
+std::shared_ptr<project1::SearchNode_rrt> find_connected_node(std::shared_ptr<project1::SearchNode_rrt>& closest_node, std::shared_ptr<project1::SearchNode_rrt>& random_node, double set_d){
  
-  std::shared_ptr<project1::SearchNode_rrt> connected_node;
+  std::shared_ptr<project1::SearchNode_rrt> connected_node = std::make_shared<project1::SearchNode_rrt>();
   
   double big_diagonal = sqrt(std::pow(random_node->x - closest_node->x,2.0) + std::pow(random_node->y - closest_node->y, 2.0));
   double big_x = random_node->x - closest_node->x;
