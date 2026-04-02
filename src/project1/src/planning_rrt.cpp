@@ -67,8 +67,6 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   closed_list.push_back(start_node);
 
   // start creating random nodes and search
-  
-
   std::shared_ptr<project1::SearchNode_rrt> random_node;
   random_node->x = random_double(-25.6,25.6);
   random_node->y = random_double(-25.6,25.6);
@@ -111,25 +109,37 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   }
 
   // if goal is found, the while loop will end
-      while(connected_node != nullptr){
-        // print out the final path in the terminal
-        final_path.push_front(connected_node);
-        /*      
-        std::cout << "connected_node: " << *connected_node << std::endl;
-        */
+        
+  //create a nav_msgs::msg::Path message
+  nav_msgs::msg::Path path_msg;
+  path_msg.header.frame_id = "map";
 
-        //publish the path
-        geometry_msgs::msg::PoseStamped pose_stamped;
-        pose_stamped.header.frame_id = "map";
-        pose_stamped.pose.position.x = connected_node->x;
-        pose_stamped.pose.position.y = connected_node->y;
-        pose_stamped.pose.position.z = 0.0;
+  while(connected_node != nullptr){
+    // print out the final path in the terminal
+    final_path.push_front(connected_node);
+    /*      
+    std::cout << "connected_node: " << *connected_node << std::endl;
+    */
 
-        pose_path.push_front(pose_stamped);
-        connected = top->bp;
-      }
+    //publish the path
+    geometry_msgs::msg::PoseStamped pose_stamped;
+    pose_stamped.header.frame_id = "map";
+    pose_stamped.pose.position.x = connected_node->x;
+    pose_stamped.pose.position.y = connected_node->y;
+    pose_stamped.pose.position.z = 0.0;
+
+    pose_path.push_front(pose_stamped);
+    connected_node = connected_node->bp;
+  }
+
+  path_msg.poses = std::vector<geometry_msgs::msg::PoseStamped>(pose_path.begin(), pose_path.end());
+  //publish the path
+  path_publisher->publish(path_msg);
+      
+  sleep(2);
 
 
+  return EXIT_SUCCESS;
 
 
 }
