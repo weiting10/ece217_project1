@@ -19,7 +19,7 @@ double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
-std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
 std::shared_ptr<project1::SearchNode_rrt> find_connected_node(project1::SearchNode_rrt closed_node, project1::SearchNode_rrt random_node);
 double random_double( double min, double max);
 
@@ -28,7 +28,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
   // keep record of the start time of this script
   auto start = std::chrono::steady_clock::now();
-  auto end;
+  auto end = std::chrono::steady_clock::now();
 
   //set the distance the new node is to the closest explored node
   double set_d = 1;
@@ -56,7 +56,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
   // create pointers for start node and goal node
   std::shared_ptr< project1::SearchNode_rrt > start_node = std::make_shared< project1::SearchNode_rrt >( -20.0, 0);
-  std::shared_ptr< project1::SearchNode > goal_node = std::make_shared< project1::SearchNode >( 20.0, 0);
+  std::shared_ptr< project1::SearchNode_rrt > goal_node = std::make_shared< project1::SearchNode_rrt >( 20.0, 0);
 
   // print start node and goal node
   std::cout << "start_node:" << *start_node << std::endl;
@@ -72,9 +72,9 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   random_node->y = random_double(-25.6,25.6);
   random_node->bp = nullptr;
 
-  std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+  std::shared_ptr<project1::SearchNode_rrt> closest_node = find_closest_node(closed_list , random_node);
 
-  std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
+  std::shared_ptr<project1::SearchNode_rrt> connected_node = find_connected_node(closest_node, random_node);
 
   std::cout << "The random node is " << random_node << std::endl;
   std::cout << "The closest node is " << closest_node << std::endl;
@@ -88,9 +88,9 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
     random_node->y = random_double(-25.6,25.6);
     random_node->bp = nullptr;
 
-    closest_node = find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node);
+    closest_node = find_closest_node(closed_list ,random_node);
 
-    connected_node = find_connected_node(std::shared_ptr<project1::SearchNode_rrt> closest_node, std::shared_ptr<project1::SearchNode_rrt> random_node);
+    connected_node = find_connected_node(closest_node, random_node);
 
     std::cout << "The random node is " << random_node << std::endl;
     std::cout << "The closest node is " << closest_node << std::endl;
@@ -109,7 +109,13 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   }
 
   // if goal is found, the while loop will end
-        
+  
+  // create a vector to store all the memory of the nodes in the path
+  std::deque< std::shared_ptr< project1::SearchNode_rrt > > final_path;
+  //create a new deque for posestamped messages
+  std::deque<geometry_msgs::msg::PoseStamped> pose_path;
+
+      
   //create a nav_msgs::msg::Path message
   nav_msgs::msg::Path path_msg;
   path_msg.header.frame_id = "map";
@@ -145,7 +151,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 }
 
 
-std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<project1::SearchNode> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node){
+std::shared_ptr<project1::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<project1::SearchNode_rrt>> closed_list , std::shared_ptr<project1::SearchNode_rrt> random_node){
 
   double shortest_distance = 51.2;
   std::shared_ptr<project1::SearchNode_rrt> closest_node;
