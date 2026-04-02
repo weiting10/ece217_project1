@@ -6,7 +6,7 @@
 #include <deque>
 
 
-namespace ECE217_project1_tan {
+namespace ece217_project1_tan {
   int process_map(const std::vector<int>& map_data, int width, int height);
   int process_map_rrt(const std::vector<int>& map_data, int width, int height);
 

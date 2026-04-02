@@ -1,15 +1,15 @@
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
 #include <boost/program_options.hpp>
-#include "ECE217_project1_tan/srv/planning_query.hpp"
+#include "ece217_project1_tan/srv/planning_query.hpp"
 #include <fstream>
 #include <chrono>
 
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
-#include "ECE217_project1_tan/srv/planning_query.hpp"
+#include "ece217_project1_tan/srv/planning_query.hpp"
 
-void request_to_visualization_msgs_marker_array( const std::shared_ptr<rclcpp::Node>& node, const std::shared_ptr< ECE217_project1_tan::srv::PlanningQuery::Request >& request, visualization_msgs::msg::MarkerArray& markerArray ){
+void request_to_visualization_msgs_marker_array( const std::shared_ptr<rclcpp::Node>& node, const std::shared_ptr< ece217_project1_tan::srv::PlanningQuery::Request >& request, visualization_msgs::msg::MarkerArray& markerArray ){
 
   // start_marker
   visualization_msgs::msg::Marker start_marker;
@@ -129,16 +129,16 @@ int main( int argc, char* argv[]){
 
   rclcpp::init( argc, argv);
 
-  std::shared_ptr< rclcpp::Node > node = rclcpp::Node::make_shared("ECE217_project1_tan_client");
+  std::shared_ptr< rclcpp::Node > node = rclcpp::Node::make_shared("ece217_project1_tan_client");
 
   auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();
   auto occupancy_grid_publisher = node->create_publisher<nav_msgs::msg::OccupancyGrid>("occupancy_grid", qos);
 	
   std::shared_ptr<rclcpp::Publisher<visualization_msgs::msg::MarkerArray_<std::allocator<void> >, std::allocator<void> > > marker_array_publisher = node->create_publisher<visualization_msgs::msg::MarkerArray>("visualization_marker_array", 1 );
 
-  rclcpp::Client<ECE217_project1_tan::srv::PlanningQuery>::SharedPtr client = node->create_client<ECE217_project1_tan::srv::PlanningQuery>("planning_query");
+  rclcpp::Client<ece217_project1_tan::srv::PlanningQuery>::SharedPtr client = node->create_client<ece217_project1_tan::srv::PlanningQuery>("planning_query");
 
-  std::shared_ptr< ECE217_project1_tan::srv::PlanningQuery::Request > request = std::make_shared< ECE217_project1_tan::srv::PlanningQuery::Request>();
+  std::shared_ptr< ece217_project1_tan::srv::PlanningQuery::Request > request = std::make_shared< ece217_project1_tan::srv::PlanningQuery::Request>();
 
   request->start.x = vm["start-x"].as<double>();
   request->start.y = vm["start-y"].as<double>();
@@ -170,7 +170,7 @@ int main( int argc, char* argv[]){
   visualization_msgs::msg::MarkerArray marker_array;
   request_to_visualization_msgs_marker_array( node, request, marker_array );
 
-  rclcpp::Client<ECE217_project1_tan::srv::PlanningQuery>::FutureAndRequestId result = client->async_send_request( request );
+  rclcpp::Client<ece217_project1_tan::srv::PlanningQuery>::FutureAndRequestId result = client->async_send_request( request );
   if( rclcpp::spin_until_future_complete( node, result ) == rclcpp::FutureReturnCode::SUCCESS ){
     RCLCPP_INFO( rclcpp::get_logger( "rclcpp" ), "Success in calling service" );
     occupancy_grid_publisher->publish( request->map );

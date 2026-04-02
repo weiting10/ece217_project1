@@ -1,6 +1,6 @@
 #include <iostream>
 #include <math.h>
-#include "ECE217_project1_tan/test_search_node.h"
+#include "ece217_project1_tan/test_search_node.h"
 #include <vector>
 #include <deque>
 #include <algorithm>
@@ -11,7 +11,7 @@
 #include <random>
 #include <chrono>
 
-namespace ECE217_project1_tan{
+namespace ece217_project1_tan{
 
 // funciton declaration
 int twod_to_oned(int x, int y, int w);
@@ -19,8 +19,8 @@ double grid_to_meter(int a);
 std::pair<int,int> oned_to_twod(int index, int w);
 std::vector<int> c_space_expansion(std::vector<int>, int w, int h);
 int meter_to_grid(double a);
-std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>>& closed_list , std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& random_node);
-std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> find_connected_node(std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& closed_node, std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& random_node, double set_d);
+std::shared_ptr<ece217_project1_tan::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<ece217_project1_tan::SearchNode_rrt>>& closed_list , std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& random_node);
+std::shared_ptr<ece217_project1_tan::SearchNode_rrt> find_connected_node(std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& closed_node, std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& random_node, double set_d);
 double random_double( double min, double max);
 
 
@@ -50,27 +50,27 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   sleep(1);
 
   // create pointers for start node and goal node
-  std::shared_ptr< ECE217_project1_tan::SearchNode_rrt > start_node = std::make_shared< ECE217_project1_tan::SearchNode_rrt >( -20.0, 0);
-  std::shared_ptr< ECE217_project1_tan::SearchNode_rrt > goal_node = std::make_shared< ECE217_project1_tan::SearchNode_rrt >( 20.0, 0);
+  std::shared_ptr< ece217_project1_tan::SearchNode_rrt > start_node = std::make_shared< ece217_project1_tan::SearchNode_rrt >( -20.0, 0);
+  std::shared_ptr< ece217_project1_tan::SearchNode_rrt > goal_node = std::make_shared< ece217_project1_tan::SearchNode_rrt >( 20.0, 0);
 
   // print start node and goal node
   std::cout << "start_node:" << *start_node << std::endl;
   std::cout << "goal_node:" << *goal_node << std::endl << std::endl;
 
   // create closed_list to store the nodes that have been explored.
-  std::vector< std::shared_ptr< ECE217_project1_tan::SearchNode_rrt > > closed_list;
+  std::vector< std::shared_ptr< ece217_project1_tan::SearchNode_rrt > > closed_list;
   closed_list.push_back(start_node);
 
   // start creating random nodes and search
-  std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> random_node = std::make_shared<ECE217_project1_tan::SearchNode_rrt>();
+  std::shared_ptr<ece217_project1_tan::SearchNode_rrt> random_node = std::make_shared<ece217_project1_tan::SearchNode_rrt>();
   random_node->x = random_double(-25.6,25.6);
   random_node->y = random_double(-25.6,25.6);
   random_node->bp = nullptr;
 
-  std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> closest_node = std::make_shared<ECE217_project1_tan::SearchNode_rrt>();
+  std::shared_ptr<ece217_project1_tan::SearchNode_rrt> closest_node = std::make_shared<ece217_project1_tan::SearchNode_rrt>();
   closest_node = find_closest_node(closed_list , random_node);
 
-  std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> connected_node = std::make_shared<ECE217_project1_tan::SearchNode_rrt>();
+  std::shared_ptr<ece217_project1_tan::SearchNode_rrt> connected_node = std::make_shared<ece217_project1_tan::SearchNode_rrt>();
   connected_node = find_connected_node(closest_node, random_node, set_d);
 
   closed_list.push_back(connected_node);
@@ -105,7 +105,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   std::cout << "RRT Path is found!" << std::endl;  
 
   // create a vector to store all the memory of the nodes in the path
-  std::deque< std::shared_ptr< ECE217_project1_tan::SearchNode_rrt > > final_path;
+  std::deque< std::shared_ptr< ece217_project1_tan::SearchNode_rrt > > final_path;
   //create a new deque for posestamped messages
   std::deque<geometry_msgs::msg::PoseStamped> pose_path;
 
@@ -165,10 +165,10 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 }
 
 
-std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>>& closed_list , std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& random_node){
+std::shared_ptr<ece217_project1_tan::SearchNode_rrt> find_closest_node(std::vector<std::shared_ptr<ece217_project1_tan::SearchNode_rrt>>& closed_list , std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& random_node){
 
   double shortest_distance = 51.2;
-  std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> closest_node;
+  std::shared_ptr<ece217_project1_tan::SearchNode_rrt> closest_node;
   double distance;
 
   for(auto closed_node : closed_list){
@@ -184,9 +184,9 @@ std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> find_closest_node(std::vect
 }	
 
 
-std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> find_connected_node(std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& closest_node, std::shared_ptr<ECE217_project1_tan::SearchNode_rrt>& random_node, double set_d){
+std::shared_ptr<ece217_project1_tan::SearchNode_rrt> find_connected_node(std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& closest_node, std::shared_ptr<ece217_project1_tan::SearchNode_rrt>& random_node, double set_d){
  
-  std::shared_ptr<ECE217_project1_tan::SearchNode_rrt> connected_node = std::make_shared<ECE217_project1_tan::SearchNode_rrt>();
+  std::shared_ptr<ece217_project1_tan::SearchNode_rrt> connected_node = std::make_shared<ece217_project1_tan::SearchNode_rrt>();
   
   double big_diagonal = sqrt(std::pow(random_node->x - closest_node->x,2.0) + std::pow(random_node->y - closest_node->y, 2.0));
   double big_x = random_node->x - closest_node->x;
