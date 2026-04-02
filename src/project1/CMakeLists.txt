@@ -34,9 +34,9 @@ include_directories(
 add_library(project1_library
   src/${PROJECT_NAME}/search_node.cpp
   src/test_search_node.cpp
+  src/planning_rrt.cpp
 )
 ament_target_dependencies(project1_library rclcpp geometry_msgs nav_msgs std_msgs visualization_msgs)
-
 
 
 set(dependencies "rclcpp" "pluginlib" "builtin_interfaces" "std_msgs" "geometry_msgs" "nav_msgs" "visualization_msgs")
@@ -69,6 +69,7 @@ target_link_libraries(test_subscriber ${Boost_PROGRAM_OPTIONS_LIBRARY})
 add_executable(test_server src/test_server.cpp 
 			   src/project1/search_node.cpp 
 			   src/test_search_node.cpp
+			   src/planning_rrt.cpp
 )
 target_include_directories(test_server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
