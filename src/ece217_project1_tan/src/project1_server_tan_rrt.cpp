@@ -123,9 +123,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
   while(connected_node->bp != nullptr){
     // print out the final path in the terminal
     final_path.push_front(connected_node);
-          
-    //std::cout << *connected_node << std::endl;
-   
+           
     //publish the path
     geometry_msgs::msg::PoseStamped pose_stamped;
     pose_stamped.header.frame_id = "map";
@@ -138,14 +136,22 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
       rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
 
     }else if(connected_node->bp == nullptr){} 
-        
-
-
-    //rrt_cost += sqrt(std::pow(connected_node->x - connected_node->bp->x, 2.0) + std::pow(connected_node->y - connected_node->bp->y, 2.0)) + delta_theta;
 
     pose_path.push_front(pose_stamped);
     connected_node = connected_node->bp;
   }
+
+  // print out the final path in the terminal
+  final_path.push_front(connected_node);
+      
+  //publish the path
+  geometry_msgs::msg::PoseStamped pose_stamped;
+  pose_stamped.header.frame_id = "map";
+  pose_stamped.pose.position.x = connected_node->x;
+  pose_stamped.pose.position.y = connected_node->y;
+  pose_stamped.pose.position.z = 0.0;
+  pose_path.push_front(pose_stamped);
+  connected_node = connected_node->bp;
 
   
   end = std::chrono::steady_clock::now();
