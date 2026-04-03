@@ -3,7 +3,7 @@
 #include "ece217_project1_tan/srv/planning_query.hpp"
 #include "ece217_project1_tan/test_search_node.h"
 
-void service_callback(const std::shared_ptr< ece217_project1_tan::srv::PlanningQuery::Request> request,
+void generate_plan(const std::shared_ptr< ece217_project1_tan::srv::PlanningQuery::Request> request,
 		const std::shared_ptr< ece217_project1_tan::srv::PlanningQuery::Response> response){
   RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Incoming PlanningQuery::Request");
   
@@ -44,7 +44,7 @@ int main( int argc, char* argv[]){
 
   std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("ece217_project1_tan_server");
 
-  rclcpp::Service<ece217_project1_tan::srv::PlanningQuery>::SharedPtr service = node->create_service<ece217_project1_tan::srv::PlanningQuery>( "planning_query", &service_callback);
+  rclcpp::Service<ece217_project1_tan::srv::PlanningQuery>::SharedPtr service = node->create_service<ece217_project1_tan::srv::PlanningQuery>( "planning_query", &generate_plan);
 
   RCLCPP_INFO( rclcpp::get_logger("rclcpp"), "Ready to generate plans.");
 

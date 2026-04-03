@@ -65,7 +65,7 @@ int process_map(const std::vector<int>& map_data, int width, int height) {
     //check the time cost: if it takes more than 10 seconds, print "didn't find goal" and exit the program
     end = std::chrono::steady_clock::now();
     if((end - start) > std::chrono::seconds(10) ){
-      std::cout << "No goal is found within 10 seconds. Exit RRT search." << std::endl;
+      std::cout << "No goal is found within 10 seconds. Exit A Star search." << std::endl;
 
       return EXIT_FAILURE;
     }

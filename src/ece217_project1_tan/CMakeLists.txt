@@ -33,8 +33,8 @@ include_directories(
 
 add_library(ece217_project1_tan_library
   src/${PROJECT_NAME}/search_node.cpp
-  src/test_search_node.cpp
-  src/planning_rrt.cpp
+  src/project1_server_tan_astar.cpp
+  src/project1_server_tan_rrt.cpp
 )
 ament_target_dependencies(ece217_project1_tan_library rclcpp geometry_msgs nav_msgs std_msgs visualization_msgs)
 
@@ -66,33 +66,33 @@ target_compile_features(test_subscriber PUBLIC c_std_99 cxx_std_17)
 ament_target_dependencies(test_subscriber rclcpp geometry_msgs)
 target_link_libraries(test_subscriber ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
-add_executable(test_server src/test_server.cpp 
+add_executable(project1_server_tan src/project1_server_tan.cpp 
 			   src/ece217_project1_tan/search_node.cpp 
-			   src/test_search_node.cpp
-			   src/planning_rrt.cpp
+			   src/project1_server_tan_astar.cpp
+			   src/project1_server_tan_rrt.cpp
 )
-target_include_directories(test_server PUBLIC
+target_include_directories(project1_server_tan PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
-target_compile_features(test_server PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(test_server rclcpp geometry_msgs nav_msgs visualization_msgs)
-target_link_libraries(test_server ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} ece217_project1_tan_library)
+target_compile_features(project1_server_tan PUBLIC c_std_99 cxx_std_17)
+ament_target_dependencies(project1_server_tan rclcpp geometry_msgs nav_msgs visualization_msgs)
+target_link_libraries(project1_server_tan ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target} ece217_project1_tan_library)
 
-add_executable(test_client src/test_client.cpp)
-target_include_directories(test_client PUBLIC
+add_executable(project1_client_tan src/project1_client_tan.cpp)
+target_include_directories(project1_client_tan PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
-target_compile_features(test_client PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(test_client rclcpp geometry_msgs nav_msgs visualization_msgs)
-target_link_libraries(test_client ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target})
+target_compile_features(project1_client_tan PUBLIC c_std_99 cxx_std_17)
+ament_target_dependencies(project1_client_tan rclcpp geometry_msgs nav_msgs visualization_msgs)
+target_link_libraries(project1_client_tan ${Boost_PROGRAM_OPTIONS_LIBRARY} ${cpp_typesupport_target})
 
 
 install(TARGETS 
 	test_node
 	test_publisher
 	test_subscriber
-	test_server
-	test_client
+	project1_server_tan
+	project1_client_tan
         DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS ece217_project1_tan_library

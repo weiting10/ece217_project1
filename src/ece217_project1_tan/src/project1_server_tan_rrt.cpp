@@ -75,7 +75,7 @@ int process_map_rrt(const std::vector<int>& map_data, int width, int height) {
 
   closed_list.push_back(connected_node);
 
-  while(fabs((connected_node->x) - (goal_node->x))>1 || fabs((connected_node->y)-(goal_node->y))>1){
+  while(fabs((connected_node->x) - (goal_node->x))>0.3 || fabs((connected_node->y)-(goal_node->y))>0.3){
     //check the time cost: if it takes more than 10 seconds, print "didn't find goal" and exit the program
     end = std::chrono::steady_clock::now();
     if((end - start) > std::chrono::seconds(10) ){
